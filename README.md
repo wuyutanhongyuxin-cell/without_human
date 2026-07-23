@@ -72,7 +72,8 @@ without_human/
 ├─ docs/
 │  ├─ IMPLEMENTATION_PLAN.md         # 完整阶段规划
 │  ├─ SECURITY_BOUNDARY.md           # 权限和凭据边界
-│  └─ QUALITY_GATES.md               # 合并与发布门禁
+│  ├─ QUALITY_GATES.md               # 合并与发布门禁
+│  └─ AUTONOMY_LESSONS.md            # 无人化编排经验和反模式
 ├─ orchestration/
 │  └─ stages.json                    # 机器可读阶段状态
 └─ templates/
