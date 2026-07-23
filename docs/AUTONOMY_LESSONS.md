@@ -40,3 +40,19 @@ Codex 提取差异、运行测试、审查和提交
 3. Codex 独立运行测试、审查 diff、扫描凭据和许可证风险。
 4. 连续三轮返工失败后，Codex 接管诊断和实现，避免无限消耗 token。
 5. API Key 不落盘是高优先级安全要求；“重启后需要用户输入一次 Key”不是无人化失败，而是安全边界。
+
+## 2026-07-23 追加：交互终端不可注入时的补救
+
+本次确认：已经打开的 Windows Terminal / OpenConsole 中的 Claude Code 输入框，不能可靠地由 Codex 自动注入消息。GUI 粘贴可能进入错误窗口；低层 `AttachConsole` / `WriteConsoleInputW` 也会失败。因此不要把“控制当前交互窗口”作为无人化基础设施。
+
+补救方案已落地为共享目录脚本：
+
+- `C:\Users\16191\KiroIsolated\OnlySharedWithKiro\Start-Claude-Kiro-Automated.ps1`
+- 输入文件：`work\CODEX_TO_CLAUDE.md`
+- 输出文件：`work\CLAUDE_TO_CODEX.md`
+- ready 文件：`work\CLAUDE_AUTOMATION_READY.txt`
+- 日志文件：`work\CLAUDE_AUTOMATION.log`
+
+运行方式：启动自动化 runner 后，用户只需隐藏输入一次 Kiro API Key；之后 Codex 通过写入 `CODEX_TO_CLAUDE.md` 投递任务，runner 用 `claude --print` 非交互执行，并把结果写回 `CLAUDE_TO_CODEX.md`。
+
+边界保持不变：Key 不落盘；Codex 不读取进程环境或日志凭据；Claude 只允许 `Read,Edit`；真实测试、Git 和 GitHub 仍由 Codex 执行。
