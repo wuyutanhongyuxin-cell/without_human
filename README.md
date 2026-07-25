@@ -157,7 +157,7 @@ agent/benchmark-release
 
 ## 当前状态
 
-当前状态以[STATUS.md](STATUS.md)为准；目前 `阶段2：混合检索与引用验证` 正在推进，已完成阶段 2B 的检索评测基座、匿名占位评测集、逐 case miss 诊断、中文 BM25/FTS 调优 v1 与评测可解释性，并已验证 Codex ↔ 隔离 Claude Code 的派工、提取、测试、推送闭环。
+当前状态以[STATUS.md](STATUS.md)为准；目前 `阶段2：混合检索与引用验证` 正在推进，已完成阶段 2B 的检索评测基座、匿名占位评测集、逐 case miss 诊断、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁与 BM25 参数扫描框架，并已验证 Codex ↔ 隔离 Claude Code 的派工、提取、测试、推送闭环。
 
 ## 许可证
 

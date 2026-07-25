@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`c9a4cc74d453a135d3768660465a4f97c1e7246e`（Add deterministic BM25 retrieval channel）
+- 目标项目最新 main：`652e890b2691991465cfebb10bf420429189983b`（Add retrieval eval CLI gate）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可准确定位并向标题为 `Claude Code` 的 Windows Terminal 会话派发任务
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1 与评测可解释性
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁与 BM25 参数扫描框架
 
 ## 最近完成
 
@@ -34,12 +34,17 @@
 - 2026-07-25：Claude 在 `/home/kiro/kiro-work/work/cailiao-task` 实现确定性 `bm25_like` 通道、查询词元扩展、`top_reasons` 评测解释字段、测试与文档更新，并写入 `/home/kiro/kiro-work/work/CLAUDE_TO_CODEX.md`。
 - 2026-07-25：Codex 提取 diff 到 `E:\tmp\cailiao-remote`，独立执行门禁：`python -m py_compile backend/server.py tests/test_library.py`、`python -m unittest discover -s tests -v`（58 tests OK）、`git diff --check`、凭据形态扫描。
 - 2026-07-25：Codex 修正 `CODEX_HANDOFF.json` 为 `verified_by_codex`，提交并推送 `cailiao` main：`c9a4cc74d453a135d3768660465a4f97c1e7246e`。
+- 2026-07-25：Codex 将隔离 Claude Code 以本地 bundle 方式同步到 `cailiao` 已发布 main `c9a4cc74d453a135d3768660465a4f97c1e7246e`，避免 WSL 网络 fetch 超时影响下一轮派工。
+- 2026-07-25：Claude 实现 `eval-retrieval` CLI、可复用 suite loader/runner、临时 SQLite 隔离、阈值门禁、`tools/evaluate_retrieval.py` 包装入口与 BM25 k1/b 参数化/扫参框架。
+- 2026-07-25：Codex 提取第二轮 diff 到 `E:\tmp\cailiao-remote`，独立执行门禁：`python -m py_compile backend/server.py tests/test_library.py tools/evaluate_retrieval.py`、`python -m unittest discover -s tests -v`（71 tests OK）、`python backend/server.py eval-retrieval ...`（exit 0）、`python tools/evaluate_retrieval.py ...`（exit 0）、`git diff --check`、凭据形态扫描。
+- 2026-07-25：Codex 修正 `CODEX_HANDOFF.json` 为 `verified_by_codex`，提交并推送 `cailiao` main：`652e890b2691991465cfebb10bf420429189983b`。
 
 ## 待完成
 
 - [x] 实现本机傻瓜式无人化控制台 P0（规划见 `docs/OPERATOR_CONSOLE_PLAN.md`），用文件信箱和白名单命令替代 GUI 长文本粘贴
 - [ ] 控制台 P1：一键准备/刷新 WSL 隔离副本，并减少对 GUI 窗口定位的依赖
 - [ ] 建立 50-100 条真实匿名检索查询集，替换 `tests/data/retrieval_eval_suite.json` 的占位合成集
+- [ ] 将 `eval-retrieval` CLI 固化到 Codex/CI 门禁脚本
 - [ ] 更大真实查询集上的 BM25/FTS 扫参与阈值校准
 - [ ] 向量检索、embedding 管线与可插拔重排
 - [ ] 引用蕴含、冲突证据检测与证据不足拒答深化
