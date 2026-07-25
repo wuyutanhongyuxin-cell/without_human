@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`1a9dfdf55d78474f0936da26034c4385b4188c50`（Add anonymized retrieval eval seed）
+- 目标项目最新 main：`c9a4cc74d453a135d3768660465a4f97c1e7246e`（Add deterministic BM25 retrieval channel）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可准确定位并向标题为 `Claude Code` 的 Windows Terminal 会话派发任务
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座与匿名占位评测集
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1 与评测可解释性
 
 ## 最近完成
 
@@ -30,13 +30,17 @@
 - 2026-07-25：Codex 提交并推送 `cailiao` main：`1a9dfdf55d78474f0936da26034c4385b4188c50`。
 - 2026-07-25：在 `without_human` 增加本机无人化控制台 P0：`control/server.py`、`control/projects.json`、`frontend/`，用于低 token 状态读取、WSL 任务文件写入、报告读取和白名单 Codex 门禁。
 - 2026-07-25：增加 Windows 一键启动脚本 `scripts\Start Without Human Console.cmd`，可从桌面快捷方式启动/打开控制台。
+- 2026-07-25：Codex 将隔离 Claude Code 同步到 `cailiao` 最新 main `1a9dfdf55d78474f0936da26034c4385b4188c50`，派发阶段 2B-BM25/FTS 调优 v1 任务，并确认命令进入正确的 Claude Code Windows Terminal 会话。
+- 2026-07-25：Claude 在 `/home/kiro/kiro-work/work/cailiao-task` 实现确定性 `bm25_like` 通道、查询词元扩展、`top_reasons` 评测解释字段、测试与文档更新，并写入 `/home/kiro/kiro-work/work/CLAUDE_TO_CODEX.md`。
+- 2026-07-25：Codex 提取 diff 到 `E:\tmp\cailiao-remote`，独立执行门禁：`python -m py_compile backend/server.py tests/test_library.py`、`python -m unittest discover -s tests -v`（58 tests OK）、`git diff --check`、凭据形态扫描。
+- 2026-07-25：Codex 修正 `CODEX_HANDOFF.json` 为 `verified_by_codex`，提交并推送 `cailiao` main：`c9a4cc74d453a135d3768660465a4f97c1e7246e`。
 
 ## 待完成
 
 - [x] 实现本机傻瓜式无人化控制台 P0（规划见 `docs/OPERATOR_CONSOLE_PLAN.md`），用文件信箱和白名单命令替代 GUI 长文本粘贴
 - [ ] 控制台 P1：一键准备/刷新 WSL 隔离副本，并减少对 GUI 窗口定位的依赖
 - [ ] 建立 50-100 条真实匿名检索查询集，替换 `tests/data/retrieval_eval_suite.json` 的占位合成集
-- [ ] 中文 BM25/FTS 参数调优
+- [ ] 更大真实查询集上的 BM25/FTS 扫参与阈值校准
 - [ ] 向量检索、embedding 管线与可插拔重排
 - [ ] 引用蕴含、冲突证据检测与证据不足拒答深化
 - [ ] 验证失败返工自动循环并固化为脚本，减少 GUI/窗口定位依赖

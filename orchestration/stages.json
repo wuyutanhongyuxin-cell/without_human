@@ -1,4 +1,4 @@
-﻿{
+{
     "stages":  [
                    {
                        "branch":  "agent/execution-environment",
@@ -17,7 +17,7 @@
                        "status":  "in_progress",
                        "name":  "混合检索与引用验证",
                        "id":  "hybrid-retrieval",
-                       "note":  "阶段 2A 已完成；阶段 2B 已完成检索评测基座、匿名占位评测集与逐 case miss 诊断，真实匿名查询集/BM25/向量/重排待实施"
+                       "note":  "阶段 2A 已完成；阶段 2B 已完成检索评测基座、匿名占位评测集、逐 case miss 诊断、中文 BM25/FTS 调优 v1 与 top_reasons 评测可解释性；真实匿名查询集、BM25 扫参、向量、重排与引用验证待实施"
                    },
                    {
                        "branch":  "agent/drafting-state-machine",
@@ -50,7 +50,7 @@
                        "id":  "benchmark-release"
                    }
                ],
-    "target_main_commit":  "1a9dfdf55d78474f0936da26034c4385b4188c50",
+    "target_main_commit":  "c9a4cc74d453a135d3768660465a4f97c1e7246e",
     "target_repository":  "https://github.com/wuyutanhongyuxin-cell/cailiao",
     "schema_version":  "1.0",
     "current_stage":  "hybrid-retrieval",
