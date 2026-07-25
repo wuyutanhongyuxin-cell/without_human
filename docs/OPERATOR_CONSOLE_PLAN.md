@@ -99,7 +99,7 @@ Control Server (Windows, Python stdlib)
   |
   +-- Windows repo: E:\tmp\cailiao-remote
   +-- WSL sandbox: /home/kiro/kiro-work/work/cailiao-task
-  +-- mailbox: /home/kiro/kiro-work/work/CODEX_TO_CLAUDE.md
+  +-- mailbox: /home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md
   +-- report: /home/kiro/kiro-work/work/CLAUDE_TO_CODEX.md
 ```
 
@@ -229,7 +229,7 @@ idle
 
 优先级：
 
-1. 文件信箱 runner：`CODEX_TO_CLAUDE.md` -> `claude --print` -> `CLAUDE_TO_CODEX.md`；
+1. 文件信箱 runner：`CODEX_TO_CLAUDE_LATEST.md` -> `claude --print` -> `CLAUDE_TO_CODEX.md`；
 2. 已认证非交互 `claude --print`，限定工作目录和工具；
 3. GUI 兜底：只发送“一行读取任务文件”的短命令。
 
@@ -245,6 +245,18 @@ GUI 兜底必须满足：
 ## MVP 实施切片
 
 ### P0：控制台骨架
+
+状态：已实现。代码位于 `control/server.py`、`control/projects.json` 和 `frontend/`。
+
+运行方式：
+
+```powershell
+python control/server.py
+```
+
+访问 `http://127.0.0.1:8787`。
+
+若端口被已有本地服务占用，控制台会自动使用下一个端口；也可以用 `WITHOUT_HUMAN_PORT` 指定。
 
 - `control/server.py`：Python 标准库 HTTP 服务；
 - `control/projects.json`：项目注册表；

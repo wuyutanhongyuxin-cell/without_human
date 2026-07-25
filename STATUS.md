@@ -28,10 +28,12 @@
 - 2026-07-25：Claude 在 `/home/kiro/kiro-work/work/cailiao-task` 实现匿名检索评测集、逐 case miss 诊断、测试与文档更新，并写入 `/home/kiro/kiro-work/work/CLAUDE_TO_CODEX.md`。
 - 2026-07-25：Codex 将改动复制到 `E:\tmp\cailiao-remote`，独立执行门禁：`python -m unittest discover -s tests -v`（52 tests OK）、`python -m py_compile backend/server.py tests/test_library.py`、`git diff --check`、凭据扫描。
 - 2026-07-25：Codex 提交并推送 `cailiao` main：`1a9dfdf55d78474f0936da26034c4385b4188c50`。
+- 2026-07-25：在 `without_human` 增加本机无人化控制台 P0：`control/server.py`、`control/projects.json`、`frontend/`，用于低 token 状态读取、WSL 任务文件写入、报告读取和白名单 Codex 门禁。
 
 ## 待完成
 
-- [ ] 实现本机傻瓜式无人化控制台（规划见 `docs/OPERATOR_CONSOLE_PLAN.md`），用文件信箱和白名单命令替代 GUI 长文本粘贴
+- [x] 实现本机傻瓜式无人化控制台 P0（规划见 `docs/OPERATOR_CONSOLE_PLAN.md`），用文件信箱和白名单命令替代 GUI 长文本粘贴
+- [ ] 控制台 P1：一键准备/刷新 WSL 隔离副本，并减少对 GUI 窗口定位的依赖
 - [ ] 建立 50-100 条真实匿名检索查询集，替换 `tests/data/retrieval_eval_suite.json` 的占位合成集
 - [ ] 中文 BM25/FTS 参数调优
 - [ ] 向量检索、embedding 管线与可插拔重排

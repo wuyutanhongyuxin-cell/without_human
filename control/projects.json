@@ -1,0 +1,28 @@
+{
+  "projects": [
+    {
+      "id": "cailiao",
+      "name": "材料写作硬审系统",
+      "github": "https://github.com/wuyutanhongyuxin-cell/cailiao",
+      "windows_repo": "E:\\tmp\\cailiao-remote",
+      "wsl_distro": "KiroUbuntu",
+      "wsl_workdir": "/home/kiro/kiro-work/work",
+      "wsl_repo": "/home/kiro/kiro-work/work/cailiao-task",
+      "task_file": "/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md",
+      "report_file": "/home/kiro/kiro-work/work/CLAUDE_TO_CODEX.md",
+      "ready_file": "/home/kiro/kiro-work/work/CLAUDE_AUTOMATION_READY.txt",
+      "branch": "main",
+      "test_commands": [
+        ["python", "-m", "py_compile", "backend/server.py", "tests/test_library.py"],
+        ["python", "-m", "unittest", "discover", "-s", "tests", "-v"],
+        ["git", "diff", "--check"]
+      ],
+      "credential_scan": ["rg", "-n", "sk-[A-Za-z0-9_-]{12,}|ghp_[A-Za-z0-9_]{12,}|github_pat_[A-Za-z0-9_]{12,}|AKIA[0-9A-Z]{16}|BEGIN (RSA|OPENSSH|EC) PRIVATE KEY", ".", "-g", "!.git/**", "-g", "!data/**"],
+      "required_docs": [
+        "README.md",
+        "docs/ROADMAP.md",
+        "CODEX_HANDOFF.json"
+      ]
+    }
+  ]
+}

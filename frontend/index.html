@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Without Human 控制台</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="rail">
+      <div class="brand">
+        <span class="stamp">WH</span>
+        <div>
+          <h1>无人化控制台</h1>
+          <p>Claude 实施，Codex 守门</p>
+        </div>
+      </div>
+      <nav>
+        <button class="nav active" data-view="overview">总览</button>
+        <button class="nav" data-view="task">派工</button>
+        <button class="nav" data-view="gates">门禁</button>
+        <button class="nav" data-view="logs">日志</button>
+      </nav>
+      <div class="guard">
+        <span>安全模式</span>
+        <strong>白名单命令</strong>
+      </div>
+    </aside>
+
+    <main>
+      <header class="top">
+        <div>
+          <h2 id="projectName">加载中</h2>
+          <p id="projectMeta">读取本机状态...</p>
+        </div>
+        <div class="actions">
+          <button id="refreshBtn">刷新状态</button>
+          <button id="fetchBtn">同步远端</button>
+          <button id="remoteBtn">核对 main</button>
+        </div>
+      </header>
+
+      <section id="overview" class="view active">
+        <div class="statusGrid">
+          <article class="metric">
+            <span>本地提交</span>
+            <strong id="headCommit">-</strong>
+          </article>
+          <article class="metric">
+            <span>工作区</span>
+            <strong id="dirtyState">-</strong>
+          </article>
+          <article class="metric">
+            <span>Claude runner</span>
+            <strong id="runnerState">-</strong>
+          </article>
+          <article class="metric">
+            <span>交付报告</span>
+            <strong id="reportState">-</strong>
+          </article>
+        </div>
+
+        <div class="split">
+          <section class="panel">
+            <div class="panelHead">
+              <h3>阶段</h3>
+            </div>
+            <div id="stageList" class="timeline"></div>
+          </section>
+          <section class="panel">
+            <div class="panelHead">
+              <h3>工作区差异</h3>
+              <button id="diffBtn">查看摘要</button>
+            </div>
+            <pre id="diffBox">暂无</pre>
+          </section>
+        </div>
+      </section>
+
+      <section id="task" class="view">
+        <div class="panel">
+          <div class="panelHead">
+            <h3>任务文件</h3>
+            <button id="writeTaskBtn">写入任务文件</button>
+          </div>
+          <textarea id="taskText"></textarea>
+          <p class="hint">主通道是 WSL 文件信箱。写入后，Claude runner 会读取任务；GUI 兜底只发送一行“读取任务文件”。</p>
+        </div>
+        <div class="panel">
+          <div class="panelHead">
+            <h3>Claude 交付报告</h3>
+            <button id="readReportBtn">读取报告</button>
+          </div>
+          <pre id="reportBox">尚未读取</pre>
+        </div>
+      </section>
+
+      <section id="gates" class="view">
+        <div class="panel">
+          <div class="panelHead">
+            <h3>Codex 门禁</h3>
+            <button id="runGatesBtn">运行门禁</button>
+          </div>
+          <div class="gateList" id="gateList"></div>
+        </div>
+      </section>
+
+      <section id="logs" class="view">
+        <div class="panel">
+          <div class="panelHead">
+            <h3>最近事件</h3>
+          </div>
+          <div id="eventList" class="events"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>

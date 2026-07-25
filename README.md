@@ -69,18 +69,48 @@ Claude使用共享API账号，并运行在隔离WSL中。给它GitHub Token、�
 without_human/
 ├─ README.md
 ├─ STATUS.md                         # 当前进度和阻塞
+├─ control/
+│  ├─ projects.json                   # 本机项目注册表
+│  └─ server.py                       # 本机控制台后端
 ├─ docs/
 │  ├─ IMPLEMENTATION_PLAN.md         # 完整阶段规划
 │  ├─ SECURITY_BOUNDARY.md           # 权限和凭据边界
 │  ├─ QUALITY_GATES.md               # 合并与发布门禁
 │  ├─ OPERATOR_CONSOLE_PLAN.md       # 本机傻瓜式控制台规划
 │  └─ AUTONOMY_LESSONS.md            # 无人化编排经验和反模式
+├─ frontend/
+│  ├─ index.html                      # 本机控制台页面
+│  ├─ styles.css
+│  └─ app.js
 ├─ orchestration/
 │  └─ stages.json                    # 机器可读阶段状态
 └─ templates/
    ├─ CLAUDE_TASK.md                 # Claude阶段任务书模板
    └─ CODEX_REVIEW.md                # Codex审查报告模板
 ```
+
+## 本机控制台
+
+控制台已作为 P0 骨架落在本仓库，默认绑定 `127.0.0.1`，不保存 API Key，不读取 `.env`，只通过白名单命令查看状态、写入 WSL 任务文件和运行 Codex 门禁。
+
+```powershell
+python control/server.py
+```
+
+浏览器打开：
+
+```text
+http://127.0.0.1:8787
+```
+
+如果 `8787` 已被其他本地服务占用，控制台会自动改用下一个端口；也可以显式指定：
+
+```powershell
+$env:WITHOUT_HUMAN_PORT=8788
+python control/server.py
+```
+
+默认项目配置在 `control/projects.json`，当前指向 `cailiao` 的 Windows 发布仓库 `E:\tmp\cailiao-remote` 与隔离 WSL 副本 `/home/kiro/kiro-work/work/cailiao-task`。运行产生的 `control/state.json` 和 `control/logs/*.json` 是本机状态，不纳入 Git。
 
 ## Git策略
 
