@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`240a14a2a7216ce88a1d3c6d9923e74fdfa26558`（Add claim evidence mapping）
+- 目标项目最新 main：`fdb231888714df93b1d82288779b6be5823c2e2e`（Add auditable library search panel）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可准确定位并向标题为 `Claude Code` 的 Windows Terminal 会话派发任务
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1
 
 ## 最近完成
 
@@ -46,6 +46,11 @@
 - 2026-07-25：Claude 返工为 `{marker: [chunk_id, ...]}` 列表语义，并补充同一标记跨多分段、HTTP JSON 往返和保守核验测试；Codex 提取 diff 到 `E:\tmp\cailiao-remote` 独立审查。
 - 2026-07-25：Codex 独立执行门禁：`python -m py_compile backend/server.py tests/test_library.py tools/evaluate_retrieval.py tools/run_quality_gates.py tests/test_quality_gates.py`、`python -m unittest discover -s tests -v`（88 tests OK）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
 - 2026-07-25：Codex 修正 `CODEX_HANDOFF.json` 为 `verified_by_codex`，提交并推送 `cailiao` main：`240a14a2a7216ce88a1d3c6d9923e74fdfa26558`；GitHub Actions `quality-gates` run `30163809068` 已完成并通过。
+- 2026-07-25：Codex 将隔离 Claude Code 同步到 `cailiao` 最新 main `240a14a2a7216ce88a1d3c6d9923e74fdfa26558`，派发阶段 2B 可审计检索/核验面板 v1 任务。
+- 2026-07-25：Claude 补齐资料库“检索与核验”前端标签与面板，修复 `app.js` 引用缺失 DOM 导致资料库 UI 事件绑定中断的问题，并展示 `top_reasons`、通道 rank/score、BM25/向量状态和 `evidence_map`。
+- 2026-07-25：Codex 提取 diff 到 `E:\tmp\cailiao-remote`，独立执行门禁：`python -m py_compile ... tests/test_frontend_ui.py ...`、`python -m unittest discover -s tests -v`（97 tests OK）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
+- 2026-07-25：Codex 额外用 Chrome DevTools 在 `http://127.0.0.1:8766/` 做浏览器冒烟：页面加载、资料库标签、检索与核验标签、空检索/空核验 guard 均通过；仅发现非阻断 favicon 404 与既有表单 label/id 可访问性提示。
+- 2026-07-25：Codex 修正 `CODEX_HANDOFF.json` 为 `verified_by_codex`，提交并推送 `cailiao` main：`fdb231888714df93b1d82288779b6be5823c2e2e`；GitHub Actions `quality-gates` run `30164635223` 已完成并通过。
 
 ## 待完成
 
@@ -56,6 +61,7 @@
 - [ ] 更大真实查询集上的 BM25/FTS 扫参与阈值校准
 - [ ] 向量检索、embedding 管线与可插拔重排
 - [x] 主张到证据精确映射 v1：逐标记归因到覆盖分段列表、漏标记、逐分段命中详情和覆盖率
+- [x] 可审计检索/核验面板 v1：前端展示 RRF 分、通道 rank/score、命中理由、BM25/向量状态、主张核验证据映射与空输入保护
 - [ ] 引用语义蕴含、冲突证据检测与证据不足拒答深化
 - [ ] 验证失败返工自动循环并固化为脚本，减少 GUI/窗口定位依赖
 - [ ] 修正 Claude 启动脚本 UTF-8 BOM 问题
