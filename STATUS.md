@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`970d93873fb21c935dea05fa8c51153e04b185f6`（Add unified quality gates）
+- 目标项目最新 main：`240a14a2a7216ce88a1d3c6d9923e74fdfa26558`（Add claim evidence mapping）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可准确定位并向标题为 `Claude Code` 的 Windows Terminal 会话派发任务
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1
 
 ## 最近完成
 
@@ -42,6 +42,10 @@
 - 2026-07-25：Codex 复核第三轮时发现并修复两处真实问题：`.env.example` 被误判为私有 env 文件、`sys.executable` 在当前 Windows Python 分发下导致子进程启动被拒绝；改为模板 env 正常扫描、门禁默认使用 `python` 命令并支持 `PYTHON` 覆盖。
 - 2026-07-25：Codex 独立执行门禁：`python -m py_compile ...`、`python -m unittest discover -s tests -v`（82 tests OK）、`python backend/server.py eval-retrieval ...`（exit 0）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`。
 - 2026-07-25：Codex 提交并推送 `cailiao` main：`970d93873fb21c935dea05fa8c51153e04b185f6`；GitHub Actions `quality-gates` run `30162797057` 已完成并通过。
+- 2026-07-25：Claude 实现阶段 2B 主张到证据精确映射 v1；Codex 复核发现 `covered_markers` 起初为单 chunk 标量，不满足多分段覆盖要求，向隔离 Claude Code 发出返工单。
+- 2026-07-25：Claude 返工为 `{marker: [chunk_id, ...]}` 列表语义，并补充同一标记跨多分段、HTTP JSON 往返和保守核验测试；Codex 提取 diff 到 `E:\tmp\cailiao-remote` 独立审查。
+- 2026-07-25：Codex 独立执行门禁：`python -m py_compile backend/server.py tests/test_library.py tools/evaluate_retrieval.py tools/run_quality_gates.py tests/test_quality_gates.py`、`python -m unittest discover -s tests -v`（88 tests OK）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
+- 2026-07-25：Codex 修正 `CODEX_HANDOFF.json` 为 `verified_by_codex`，提交并推送 `cailiao` main：`240a14a2a7216ce88a1d3c6d9923e74fdfa26558`；GitHub Actions `quality-gates` run `30163809068` 已完成并通过。
 
 ## 待完成
 
@@ -51,7 +55,8 @@
 - [x] 将 `eval-retrieval` CLI 固化到 Codex/CI 门禁脚本
 - [ ] 更大真实查询集上的 BM25/FTS 扫参与阈值校准
 - [ ] 向量检索、embedding 管线与可插拔重排
-- [ ] 引用蕴含、冲突证据检测与证据不足拒答深化
+- [x] 主张到证据精确映射 v1：逐标记归因到覆盖分段列表、漏标记、逐分段命中详情和覆盖率
+- [ ] 引用语义蕴含、冲突证据检测与证据不足拒答深化
 - [ ] 验证失败返工自动循环并固化为脚本，减少 GUI/窗口定位依赖
 - [ ] 修正 Claude 启动脚本 UTF-8 BOM 问题
 
