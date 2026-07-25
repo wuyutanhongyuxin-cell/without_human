@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`fdb231888714df93b1d82288779b6be5823c2e2e`（Add auditable library search panel）
+- 目标项目最新 main：`6c2ec752c8465a0a839905c21ed6463a417989ac`（Add metadata filter coverage）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可准确定位并向标题为 `Claude Code` 的 Windows Terminal 会话派发任务
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1
 
 ## 最近完成
 
@@ -51,6 +51,11 @@
 - 2026-07-25：Codex 提取 diff 到 `E:\tmp\cailiao-remote`，独立执行门禁：`python -m py_compile ... tests/test_frontend_ui.py ...`、`python -m unittest discover -s tests -v`（97 tests OK）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
 - 2026-07-25：Codex 额外用 Chrome DevTools 在 `http://127.0.0.1:8766/` 做浏览器冒烟：页面加载、资料库标签、检索与核验标签、空检索/空核验 guard 均通过；仅发现非阻断 favicon 404 与既有表单 label/id 可访问性提示。
 - 2026-07-25：Codex 修正 `CODEX_HANDOFF.json` 为 `verified_by_codex`，提交并推送 `cailiao` main：`fdb231888714df93b1d82288779b6be5823c2e2e`；GitHub Actions `quality-gates` run `30164635223` 已完成并通过。
+- 2026-07-25：Codex 发现 Windows Terminal 句柄/活动标签可能错配，改用 WSL `ps` 定位 Claude Code 所在 `pts/0`，直接向 `/dev/pts/0` 写入短命令，成功派发下一轮任务，后续应优先采用该 TTY 派发方式。
+- 2026-07-25：Claude 完成元数据过滤 v1 的后端/前端初稿后长时间停滞，未补测试/文档/报告；Codex 按无人化规则接管，补齐测试、文档与 `CODEX_HANDOFF.json`。
+- 2026-07-25：`cailiao` 新增 `organization` 与 `format` 检索过滤，前端检索/核验面板新增机关、格式、发布日期区间和有效性范围控件，并显示“生效过滤”摘要；测试覆盖 `search_library`、HTTP `/api/library/search`、评测 case 级过滤和前端静态 UI。
+- 2026-07-25：Codex 独立执行门禁：`python -m py_compile ...`、`python -m unittest discover -s tests -v`（101 tests OK）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描；Chrome DevTools 冒烟确认新增控件与过滤摘要可见。
+- 2026-07-25：Codex 提交并推送 `cailiao` main：`6c2ec752c8465a0a839905c21ed6463a417989ac`；GitHub Actions `quality-gates` run `30165613093` 已完成并通过。
 
 ## 待完成
 
@@ -62,8 +67,9 @@
 - [ ] 向量检索、embedding 管线与可插拔重排
 - [x] 主张到证据精确映射 v1：逐标记归因到覆盖分段列表、漏标记、逐分段命中详情和覆盖率
 - [x] 可审计检索/核验面板 v1：前端展示 RRF 分、通道 rank/score、命中理由、BM25/向量状态、主张核验证据映射与空输入保护
+- [x] 元数据过滤 UI/评测覆盖 v1：机关、格式、日期区间、有效性范围、地区、来源类型、权威、文档/分段状态的搜索/HTTP/评测覆盖
 - [ ] 引用语义蕴含、冲突证据检测与证据不足拒答深化
-- [ ] 验证失败返工自动循环并固化为脚本，减少 GUI/窗口定位依赖
+- [ ] 将 WSL TTY 派发、报告轮询、diff 提取、门禁与返工循环固化为脚本，减少 GUI/窗口定位依赖
 - [ ] 修正 Claude 启动脚本 UTF-8 BOM 问题
 
 ## 已知约束

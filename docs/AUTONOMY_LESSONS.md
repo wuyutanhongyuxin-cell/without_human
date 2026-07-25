@@ -1,6 +1,6 @@
 # 无人化编排经验
 
-更新时间：2026-07-23
+更新时间：2026-07-25
 
 ## 复盘结论
 
@@ -40,6 +40,7 @@ Codex 提取差异、运行测试、审查和提交
 3. Codex 独立运行测试、审查 diff、扫描凭据和许可证风险。
 4. 连续三轮返工失败后，Codex 接管诊断和实现，避免无限消耗 token。
 5. API Key 不落盘是高优先级安全要求；“重启后需要用户输入一次 Key”不是无人化失败，而是安全边界。
+6. 若已能在 WSL 内定位 Claude Code 的 TTY，优先向该 TTY 发送短命令，避免 Windows Terminal 标签/句柄错配。
 
 ## 2026-07-23 追加：交互终端不可注入时的补救
 
@@ -56,3 +57,21 @@ Codex 提取差异、运行测试、审查和提交
 运行方式：启动自动化 runner 后，用户只需隐藏输入一次 Kiro API Key；之后 Codex 通过写入 `CODEX_TO_CLAUDE.md` 投递任务，runner 用 `claude --print` 非交互执行，并把结果写回 `CLAUDE_TO_CODEX.md`。
 
 边界保持不变：Key 不落盘；Codex 不读取进程环境或日志凭据；Claude 只允许 `Read,Edit`；真实测试、Git 和 GitHub 仍由 Codex 执行。
+
+## 2026-07-25 追加：优先使用 WSL TTY 派发短命令
+
+本次确认：Windows Terminal 的顶层窗口标题、句柄和活动标签可能不一致。即使枚举到标题像 `Claude Code` 的窗口，也可能因为同一 Terminal 进程的活动标签切换，把短命令发到 Codex/material 会话。
+
+更稳定的派发路径是在 WSL 内定位 Claude Code 进程的 TTY：
+
+```bash
+ps -eo pid,ppid,tty,stat,comm,args | grep -E 'claude|node|kiro|bash' | grep -v grep
+```
+
+确认 `claude` 所在 TTY（本轮为 `pts/0`）后，只把短命令写入该 TTY：
+
+```bash
+printf '%s\r' '请读取 /home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md 并严格执行。完成后把交付报告写入 /home/kiro/kiro-work/work/CLAUDE_TO_CODEX.md。' > /dev/pts/0
+```
+
+长任务仍写入 `CODEX_TO_CLAUDE_LATEST.md`，不要通过 TTY 粘长文本。Codex 继续通过报告时间戳、`git diff --stat`、交付报告和门禁结果低频轮询，避免用高 token 方式盯屏。若 Claude 长时间停滞且未补齐测试/文档/报告，Codex 可接管补齐并在 handoff 中记录接管原因。
