@@ -1,16 +1,58 @@
 ﻿{
-  "schema_version": "1.0",
-  "updated_at": "2026-07-19",
-  "target_repository": "https://github.com/wuyutanhongyuxin-cell/cailiao",
-  "current_stage": "execution-environment",
-  "stages": [
-    {"id":"execution-environment","name":"自动化执行环境","status":"in_progress","branch":"agent/execution-environment"},
-    {"id":"evidence-store","name":"可信证据库","status":"pending","branch":"agent/evidence-store"},
-    {"id":"hybrid-retrieval","name":"混合检索与引用验证","status":"pending","branch":"agent/hybrid-retrieval"},
-    {"id":"drafting-state-machine","name":"写作状态机","status":"pending","branch":"agent/drafting-state-machine"},
-    {"id":"document-rules","name":"文种与硬审规则","status":"pending","branch":"agent/document-rules"},
-    {"id":"docx-layout","name":"正式DOCX排版","status":"pending","branch":"agent/docx-layout"},
-    {"id":"security-deployment","name":"安全与部署","status":"pending","branch":"agent/security-deployment"},
-    {"id":"benchmark-release","name":"Benchmark与交付","status":"pending","branch":"agent/benchmark-release"}
-  ]
+    "stages":  [
+                   {
+                       "branch":  "agent/execution-environment",
+                       "status":  "completed",
+                       "name":  "自动化执行环境",
+                       "id":  "execution-environment"
+                   },
+                   {
+                       "branch":  "agent/evidence-store",
+                       "status":  "completed",
+                       "name":  "可信证据库",
+                       "id":  "evidence-store"
+                   },
+                   {
+                       "branch":  "agent/hybrid-retrieval",
+                       "status":  "in_progress",
+                       "name":  "混合检索与引用验证",
+                       "id":  "hybrid-retrieval",
+                       "note":  "阶段 2A 已完成；阶段 2B 已完成检索评测基座、匿名占位评测集与逐 case miss 诊断，真实匿名查询集/BM25/向量/重排待实施"
+                   },
+                   {
+                       "branch":  "agent/drafting-state-machine",
+                       "status":  "pending",
+                       "name":  "写作状态机",
+                       "id":  "drafting-state-machine"
+                   },
+                   {
+                       "branch":  "agent/document-rules",
+                       "status":  "pending",
+                       "name":  "文种与硬审规则",
+                       "id":  "document-rules"
+                   },
+                   {
+                       "branch":  "agent/docx-layout",
+                       "status":  "pending",
+                       "name":  "正式DOCX排版",
+                       "id":  "docx-layout"
+                   },
+                   {
+                       "branch":  "agent/security-deployment",
+                       "status":  "pending",
+                       "name":  "安全与部署",
+                       "id":  "security-deployment"
+                   },
+                   {
+                       "branch":  "agent/benchmark-release",
+                       "status":  "pending",
+                       "name":  "Benchmark与交付",
+                       "id":  "benchmark-release"
+                   }
+               ],
+    "target_main_commit":  "1a9dfdf55d78474f0936da26034c4385b4188c50",
+    "target_repository":  "https://github.com/wuyutanhongyuxin-cell/cailiao",
+    "schema_version":  "1.0",
+    "current_stage":  "hybrid-retrieval",
+    "updated_at":  "2026-07-25"
 }
