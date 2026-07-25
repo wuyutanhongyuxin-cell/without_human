@@ -75,3 +75,20 @@ printf '%s\r' '请读取 /home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md 并
 ```
 
 长任务仍写入 `CODEX_TO_CLAUDE_LATEST.md`，不要通过 TTY 粘长文本。Codex 继续通过报告时间戳、`git diff --stat`、交付报告和门禁结果低频轮询，避免用高 token 方式盯屏。若 Claude 长时间停滞且未补齐测试/文档/报告，Codex 可接管补齐并在 handoff 中记录接管原因。
+
+## 2026-07-25 追加：TTY 也必须用产物闭环确认
+
+本轮确认：向 `/dev/pts/0` 写入短命令后，不能只凭命令返回 0 判断 Claude 已消费输入。必须继续用低频轮询确认三件事：
+
+- `git status --short` 或 `git diff --stat` 是否出现本轮相关改动；
+- `/home/kiro/kiro-work/work/CLAUDE_TO_CODEX.md` 的时间戳和 Task ID 是否更新；
+- 必要时用 UIA 明确区分 Codex 窗口（例如 `material-writing-system`）和 Claude 窗口（例如 `Execute Codex-to-Claude task instructions`），再截图确认 Claude 是否正在执行。
+
+如果 TTY 写入没有被消费，可以把完整任务仍保留在 `CODEX_TO_CLAUDE_LATEST.md`，只通过已验证的 Claude 窗口粘贴一行短命令。GUI 发送后仍必须以 diff/report 作为真实依据。
+
+本轮还确认：Claude Code 可能在 `fs_write` 等工具调用阶段出现 `API Error: Upstream ended before completing tool_use`，导致代码 diff 已存在但交付报告未写入。处理规则：
+
+1. 不把旧 `CLAUDE_TO_CODEX.md` 当作本轮报告；
+2. 若 diff 已足够完整，Codex 可接管审查、补齐测试稳定性问题、修复 handoff 编码/状态；
+3. 在 `CODEX_HANDOFF.json` 和 `without_human` 进度中明确记录“Claude 实现 + Codex 接管验证/修正”的边界；
+4. 只有本地门禁、凭据扫描、GitHub Actions 都通过后才更新目标 main commit。

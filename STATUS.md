@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`6c2ec752c8465a0a839905c21ed6463a417989ac`（Add metadata filter coverage）
+- 目标项目最新 main：`320b5d4b1750dfb3255044bb5fff2c37f964e164`（Add retrieval eval suite validator）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -17,10 +17,10 @@
 - [x] WSL interop 已禁用
 - [x] Claude 不保存 API Key；Key 由用户在本机启动器隐藏输入
 - [x] GitHub 写操作由 Codex 承担
-- [x] Codex 可准确定位并向标题为 `Claude Code` 的 Windows Terminal 会话派发任务
+- [x] Codex 可通过 WSL TTY 优先派发短命令，并在 TTY 不消费输入时用 UIA/窗口截图确认 Claude Code 状态
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1
 
 ## 最近完成
 
@@ -56,6 +56,11 @@
 - 2026-07-25：`cailiao` 新增 `organization` 与 `format` 检索过滤，前端检索/核验面板新增机关、格式、发布日期区间和有效性范围控件，并显示“生效过滤”摘要；测试覆盖 `search_library`、HTTP `/api/library/search`、评测 case 级过滤和前端静态 UI。
 - 2026-07-25：Codex 独立执行门禁：`python -m py_compile ...`、`python -m unittest discover -s tests -v`（101 tests OK）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描；Chrome DevTools 冒烟确认新增控件与过滤摘要可见。
 - 2026-07-25：Codex 提交并推送 `cailiao` main：`6c2ec752c8465a0a839905c21ed6463a417989ac`；GitHub Actions `quality-gates` run `30165613093` 已完成并通过。
+- 2026-07-25：Codex 派发阶段 2B 评测集结构校验工具 v1；TTY 写入未立即被 Claude 消费时，改用 UIA 精确区分 `material-writing-system`（Codex）与 `Execute Codex-to-Claude task instructions`（Claude）窗口，并用截图确认 Claude 已在执行。
+- 2026-07-25：Claude 在隔离工作区实现 `server.validate_retrieval_suite`、`tools/validate_retrieval_suite.py`、`tests/test_suite_validator.py` 与文档更新，但写交付报告时遇到 Claude Code `API Error: Upstream ended before completing tool_use ... (fs_write)`；Codex 按无人化规则提取 diff 接管审核。
+- 2026-07-25：Codex 发现并修复两处交付质量问题：CLI 无效套件测试写入 `tests/data` 导致受限目录失败，改为 `tempfile.TemporaryDirectory`；`CODEX_HANDOFF.json` 出现 mojibake，改为 ASCII 可审计 JSON 并写入真实验证结果。
+- 2026-07-25：Codex 独立执行门禁：`python -m py_compile ... tools/validate_retrieval_suite.py tests/test_suite_validator.py`、`python -m unittest discover -s tests -v`（118 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
+- 2026-07-25：Codex 提交并推送 `cailiao` main：`320b5d4b1750dfb3255044bb5fff2c37f964e164`；GitHub Actions `quality-gates` run `30166642045` 已完成并通过。
 
 ## 待完成
 
@@ -68,6 +73,7 @@
 - [x] 主张到证据精确映射 v1：逐标记归因到覆盖分段列表、漏标记、逐分段命中详情和覆盖率
 - [x] 可审计检索/核验面板 v1：前端展示 RRF 分、通道 rank/score、命中理由、BM25/向量状态、主张核验证据映射与空输入保护
 - [x] 元数据过滤 UI/评测覆盖 v1：机关、格式、日期区间、有效性范围、地区、来源类型、权威、文档/分段状态的搜索/HTTP/评测覆盖
+- [x] 评测集结构校验工具 v1：校验 id 唯一、query 非空、过滤键、相关性目标、min_authority/format，并以错误/告警区分结构违规与占位/数量不足风险
 - [ ] 引用语义蕴含、冲突证据检测与证据不足拒答深化
 - [ ] 将 WSL TTY 派发、报告轮询、diff 提取、门禁与返工循环固化为脚本，减少 GUI/窗口定位依赖
 - [ ] 修正 Claude 启动脚本 UTF-8 BOM 问题
