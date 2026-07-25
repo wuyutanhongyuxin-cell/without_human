@@ -29,6 +29,7 @@
 - 2026-07-25：Codex 将改动复制到 `E:\tmp\cailiao-remote`，独立执行门禁：`python -m unittest discover -s tests -v`（52 tests OK）、`python -m py_compile backend/server.py tests/test_library.py`、`git diff --check`、凭据扫描。
 - 2026-07-25：Codex 提交并推送 `cailiao` main：`1a9dfdf55d78474f0936da26034c4385b4188c50`。
 - 2026-07-25：在 `without_human` 增加本机无人化控制台 P0：`control/server.py`、`control/projects.json`、`frontend/`，用于低 token 状态读取、WSL 任务文件写入、报告读取和白名单 Codex 门禁。
+- 2026-07-25：增加 Windows 一键启动脚本 `scripts\Start Without Human Console.cmd`，可从桌面快捷方式启动/打开控制台。
 
 ## 待完成
 

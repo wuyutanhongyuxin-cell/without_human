@@ -112,6 +112,14 @@ python control/server.py
 
 默认项目配置在 `control/projects.json`，当前指向 `cailiao` 的 Windows 发布仓库 `E:\tmp\cailiao-remote` 与隔离 WSL 副本 `/home/kiro/kiro-work/work/cailiao-task`。运行产生的 `control/state.json` 和 `control/logs/*.json` 是本机状态，不纳入 Git。
 
+Windows 一键启动入口：
+
+```text
+scripts\Start Without Human Console.cmd
+```
+
+这个脚本会先寻找已经运行的 Without Human 控制台；找到了就直接打开浏览器，没找到就从 `8787` 开始选择空闲端口启动后端，再打开浏览器。桌面快捷方式可以直接指向这个 `.cmd` 文件。
+
 ## Git策略
 
 每个阶段使用独立分支：
