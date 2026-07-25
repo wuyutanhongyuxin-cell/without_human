@@ -73,6 +73,7 @@ without_human/
 │  ├─ IMPLEMENTATION_PLAN.md         # 完整阶段规划
 │  ├─ SECURITY_BOUNDARY.md           # 权限和凭据边界
 │  ├─ QUALITY_GATES.md               # 合并与发布门禁
+│  ├─ OPERATOR_CONSOLE_PLAN.md       # 本机傻瓜式控制台规划
 │  └─ AUTONOMY_LESSONS.md            # 无人化编排经验和反模式
 ├─ orchestration/
 │  └─ stages.json                    # 机器可读阶段状态
@@ -118,7 +119,7 @@ agent/benchmark-release
 
 ## 当前状态
 
-当前处于`阶段0：自动化执行环境`。详情见[STATUS.md](STATUS.md)。
+当前状态以[STATUS.md](STATUS.md)为准；目前已进入 `阶段2：混合检索与引用验证` 的阶段 2B 推进，并已验证 Codex ↔ 隔离 Claude Code 的派工、提取、测试、推送闭环。
 
 ## 许可证
 

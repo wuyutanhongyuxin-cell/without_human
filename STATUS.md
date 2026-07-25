@@ -31,6 +31,7 @@
 
 ## 待完成
 
+- [ ] 实现本机傻瓜式无人化控制台（规划见 `docs/OPERATOR_CONSOLE_PLAN.md`），用文件信箱和白名单命令替代 GUI 长文本粘贴
 - [ ] 建立 50-100 条真实匿名检索查询集，替换 `tests/data/retrieval_eval_suite.json` 的占位合成集
 - [ ] 中文 BM25/FTS 参数调优
 - [ ] 向量检索、embedding 管线与可插拔重排
