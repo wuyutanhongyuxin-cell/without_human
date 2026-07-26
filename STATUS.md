@@ -1,13 +1,13 @@
 # 当前状态
 
-更新时间：2026-07-25
+更新时间：2026-07-26
 
 ## 总体进度
 
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`320b5d4b1750dfb3255044bb5fff2c37f964e164`（Add retrieval eval suite validator）
+- 目标项目最新 main：`1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757`（Add deterministic conflict evidence candidates）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可通过 WSL TTY 优先派发短命令，并在 TTY 不消费输入时用 UIA/窗口截图确认 Claude Code 状态
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1
 
 ## 最近完成
 
@@ -61,6 +61,11 @@
 - 2026-07-25：Codex 发现并修复两处交付质量问题：CLI 无效套件测试写入 `tests/data` 导致受限目录失败，改为 `tempfile.TemporaryDirectory`；`CODEX_HANDOFF.json` 出现 mojibake，改为 ASCII 可审计 JSON 并写入真实验证结果。
 - 2026-07-25：Codex 独立执行门禁：`python -m py_compile ... tools/validate_retrieval_suite.py tests/test_suite_validator.py`、`python -m unittest discover -s tests -v`（118 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
 - 2026-07-25：Codex 提交并推送 `cailiao` main：`320b5d4b1750dfb3255044bb5fff2c37f964e164`；GitHub Actions `quality-gates` run `30166642045` 已完成并通过。
+- 2026-07-26：上一轮派发 `cailiao-stage2b-conflict-evidence-v1` 后，当前 Codex 会话无法访问 `KiroUbuntu`，本地只保留 Claude Code 截图，未发现 Claude 交付 diff/report；Codex 按无人化接管规则从 `cailiao` main `320b5d4b1750dfb3255044bb5fff2c37f964e164` 直接实现确定性冲突证据候选 v1。
+- 2026-07-26：`cailiao` 新增 `detect_conflict_evidence` 与 `verify_claim.conflict_evidence`，对同上下文不同数量标记、必备标记附近明确否定进行保守提示；命中时把原本 `supported` 的结论降级为 `needs_verification`，不声称语义蕴含或真实矛盾证明。
+- 2026-07-26：Codex 修正统一门禁 `py-compile`，使用临时 `PYTHONPYCACHEPREFIX`，避免受旧 `__pycache__` 目录 ownership 影响。
+- 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（121 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
+- 2026-07-26：Codex 提交并推送 `cailiao` main：`1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757`。
 
 ## 待完成
 
@@ -74,7 +79,8 @@
 - [x] 可审计检索/核验面板 v1：前端展示 RRF 分、通道 rank/score、命中理由、BM25/向量状态、主张核验证据映射与空输入保护
 - [x] 元数据过滤 UI/评测覆盖 v1：机关、格式、日期区间、有效性范围、地区、来源类型、权威、文档/分段状态的搜索/HTTP/评测覆盖
 - [x] 评测集结构校验工具 v1：校验 id 唯一、query 非空、过滤键、相关性目标、min_authority/format，并以错误/告警区分结构违规与占位/数量不足风险
-- [ ] 引用语义蕴含、冲突证据检测与证据不足拒答深化
+- [x] 确定性冲突证据候选 v1：同上下文不同数量、明确否定候选，命中降级为待核实
+- [ ] 引用语义蕴含、完整语义级冲突证据检测与证据不足拒答深化
 - [ ] 将 WSL TTY 派发、报告轮询、diff 提取、门禁与返工循环固化为脚本，减少 GUI/窗口定位依赖
 - [ ] 修正 Claude 启动脚本 UTF-8 BOM 问题
 
@@ -84,3 +90,4 @@
 - Claude 的 Key 不落盘，因此进程或 WSL 重启后需要用户重新隐藏输入一次。
 - Claude 不应自行执行 Git push；所有真实测试、提交和发布由 Codex 完成。
 - 交互窗口派发必须先验证窗口标题与前台句柄；不要向目录名为 `material-writing-system` 的 Codex 标签发送任务。
+- 当前会话未恢复到 `KiroUbuntu` / Claude Code 通道；`wsl.exe -l -v` 显示无可用发行版，`wsl.exe -d KiroUbuntu` 返回 `WSL_E_DISTRO_NOT_FOUND`。恢复 Claude 协作前需先恢复/重挂该 WSL 发行版或重建隔离副本。

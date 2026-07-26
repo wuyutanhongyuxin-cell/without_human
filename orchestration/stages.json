@@ -17,7 +17,7 @@
                        "status":  "in_progress",
                        "name":  "混合检索与引用验证",
                        "id":  "hybrid-retrieval",
-                       "note":  "阶段 2A 已完成；阶段 2B 已完成检索评测基座、匿名占位评测集、逐 case miss 诊断、中文 BM25/FTS 调优 v1、top_reasons 评测可解释性、eval-retrieval CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1；真实匿名查询集、BM25 阈值校准、向量、重排、语义蕴含与冲突检测待实施"
+                       "note":  "阶段 2A 已完成；阶段 2B 已完成检索评测基座、匿名占位评测集、逐 case miss 诊断、中文 BM25/FTS 调优 v1、top_reasons 评测可解释性、eval-retrieval CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1；真实匿名查询集、BM25 阈值校准、向量、重排、语义蕴含与完整语义级冲突检测待实施"
                    },
                    {
                        "branch":  "agent/drafting-state-machine",
@@ -50,9 +50,9 @@
                        "id":  "benchmark-release"
                    }
                ],
-    "target_main_commit":  "320b5d4b1750dfb3255044bb5fff2c37f964e164",
+    "target_main_commit":  "1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757",
     "target_repository":  "https://github.com/wuyutanhongyuxin-cell/cailiao",
     "schema_version":  "1.0",
     "current_stage":  "hybrid-retrieval",
-    "updated_at":  "2026-07-25"
+    "updated_at":  "2026-07-26"
 }
