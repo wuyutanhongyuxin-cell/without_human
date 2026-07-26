@@ -116,3 +116,6 @@
 - Claude 不应自行执行 Git push；所有真实测试、提交和发布由 Codex 完成。
 - 交互窗口派发必须先验证窗口标题与前台句柄；不要向目录名为 `material-writing-system` 的 Codex 标签发送任务。
 - 普通沙箱用户 `sjtu-tony\codexsandboxoffline` 可能看不到按宿主用户注册的 WSL 发行版；需要读取/派发 `KiroUbuntu` 时，应使用已授权的宿主/提权命令上下文。提权视角已确认 `KiroUbuntu` running、Claude PID 9 在 `/dev/pts/0`。
+
+## DeepSeek live delegation fix
+- 2026-07-26: Codex fixed scripts/invoke-deepseek-task.ps1 for stable low-risk DeepSeek helper usage. Changes: UTF-8 no-BOM byte body for Invoke-RestMethod, -Transport Auto|InvokeRestMethod|Curl, curl fallback with no-BOM temp JSON outside repo, 1MB request body guard, parsed sanitized API error bodies, and empty-content failure. Live smoke passed with deepseek-v4-flash and -MaxTokens 100 for both Auto and Curl transports. No API key was printed, no request body was committed, and scratch files were removed.

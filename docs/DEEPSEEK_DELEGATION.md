@@ -54,6 +54,8 @@ powershell -ExecutionPolicy Bypass -File scripts\set-deepseek-key.ps1
 
 The script stores `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, and `DEEPSEEK_BASE_URL` as Windows User environment variables, outside the repository. `scripts/invoke-deepseek-task.ps1` reads process env first, then User env, and calls the OpenAI-compatible `/chat/completions` endpoint. It does not print the key.
 
+The invoke script uses `Invoke-RestMethod` first with a UTF-8 byte request body. If Windows PowerShell transport fails during send, `-Transport Auto` retries through `curl.exe` using a no-BOM temporary JSON file outside the repository. API error bodies are parsed and reported without printing the key. Empty `choices[0].message.content` is treated as a failure; very small `-MaxTokens` values can produce empty content on reasoning-capable DeepSeek models, so smoke tests should use at least 100 tokens.
+
 ## Usage
 
 ```powershell
