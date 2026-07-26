@@ -67,6 +67,7 @@
 - 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（121 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
 - 2026-07-26：Codex 提交并推送 `cailiao` main：`1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757`。
 - 2026-07-26：Codex 向 Claude `/dev/pts/0` 写入短状态，告知 conflict-evidence-v1 已由 Codex 发布，隔离工作区旧 diff 不要继续应用，等待下一轮明确任务。
+- 2026-07-26：Codex 做握手验证：直接写 `/dev/pts/0` 未产生 ack；通过 UIA 聚焦 `1 awaiting input · claude agents` 窗口、粘贴短命令并回车后，Claude 写入 `/home/kiro/kiro-work/work/CLAUDE_ACK_FROM_CODEX.txt`，内容为 `ACK codex-claude-handshake-20260726`。结论：Claude Code 可交互，但本会话应优先使用“任务文件 + 已验证 Claude 窗口短命令 + ack/report 文件回执”的闭环，不只凭 TTY 写入返回码判断成功。
 
 ## 待完成
 

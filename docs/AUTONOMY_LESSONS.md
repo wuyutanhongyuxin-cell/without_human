@@ -92,3 +92,27 @@ printf '%s\r' '请读取 /home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md 并
 2. 若 diff 已足够完整，Codex 可接管审查、补齐测试稳定性问题、修复 handoff 编码/状态；
 3. 在 `CODEX_HANDOFF.json` 和 `without_human` 进度中明确记录“Claude 实现 + Codex 接管验证/修正”的边界；
 4. 只有本地门禁、凭据扫描、GitHub Actions 都通过后才更新目标 main commit。
+
+## 2026-07-26 追加：WSL 视角与 Claude 握手必须分开验证
+
+本轮确认：Codex 普通沙箱用户可能看不到宿主用户注册的 WSL 发行版，`wsl.exe -l -v` 在普通视角显示无发行版，并不等于 `KiroUbuntu` 不存在或 Claude Code 已停止。遇到这种矛盾时，必须再用已授权的宿主/提权命令确认：
+
+```powershell
+wsl.exe -l -v
+wsl.exe -d KiroUbuntu -- bash -lc "ps -fp 9; readlink /proc/9/fd/0"
+```
+
+本轮提权视角确认 `KiroUbuntu` running，Claude PID 9 仍绑定 `/dev/pts/0`。
+
+同时确认：`/dev/pts/0` 可写不代表 Claude 已消费输入。握手测试中，直接写 TTY 没有产生 ack；通过 UIA 聚焦标题为 `1 awaiting input · claude agents` 的 Claude 窗口，粘贴一行短命令并回车后，Claude 成功写入 `/home/kiro/kiro-work/work/CLAUDE_ACK_FROM_CODEX.txt`：
+
+```text
+ACK codex-claude-handshake-20260726
+```
+
+后续派发规则：
+
+1. 长任务仍写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`。
+2. 优先尝试已确认的 TTY 短命令，但必须轮询 ack/report/diff 产物确认消费。
+3. 若 TTY 写入无产物，应使用 UIA 精确聚焦 Claude 窗口，只粘贴一行短命令，不粘贴长任务。
+4. 成功与否只以产物闭环为准：ack 文件、`CLAUDE_TO_CODEX.md` Task ID、`git diff --stat`、测试/门禁结果。
