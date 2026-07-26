@@ -119,3 +119,9 @@
 
 ## DeepSeek live delegation fix
 - 2026-07-26: Codex fixed scripts/invoke-deepseek-task.ps1 for stable low-risk DeepSeek helper usage. Changes: UTF-8 no-BOM byte body for Invoke-RestMethod, -Transport Auto|InvokeRestMethod|Curl, curl fallback with no-BOM temp JSON outside repo, 1MB request body guard, parsed sanitized API error bodies, and empty-content failure. Live smoke passed with deepseek-v4-flash and -MaxTokens 100 for both Auto and Curl transports. No API key was printed, no request body was committed, and scratch files were removed.
+
+## cailiao Stage 3 structured writing plan v1
+- 2026-07-26: Codex attempted the normal two-CLI loop for `cailiao-stage3-structured-writing-plan-v1`: task file was written to `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`, UIA send was attempted, then the verified Claude TTY `/dev/pts/0` was used. The WSL repo stayed clean and `CLAUDE_TO_CODEX.md` still reported the previous task, so Claude Code did not consume this task in the polling window.
+- 2026-07-26: To avoid stalling, Codex implemented the small Stage 3 slice directly in `E:\tmp\cailiao-remote`: `build_structured_writing_plan(payload, analysis)` plus request-local evidence adaptation, tests, quality-gate coverage, README/ROADMAP, and `CODEX_HANDOFF.json`.
+- 2026-07-26: Local gates passed before push: `python -m unittest tests.test_structured_writing_plan -v` (7 tests OK), `python -m unittest discover -s tests -v` (175 tests OK), retrieval suite validator passed with expected placeholder/<50 warnings, `python tools/run_quality_gates.py --json` passed 5/5, `python -m json.tool CODEX_HANDOFF.json` passed, and `git diff --check` passed.
+- 2026-07-26: Pushed `cailiao` main `4ae1ba1 Add structured writing plan`; GitHub Actions `quality-gates` run `30199395069` completed with conclusion `success`. DeepSeek was kept available as the low-token helper, but no live DeepSeek call was needed for this deterministic implementation/review slice.
