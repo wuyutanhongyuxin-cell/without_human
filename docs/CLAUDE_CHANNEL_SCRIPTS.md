@@ -29,6 +29,12 @@ powershell -ExecutionPolicy Bypass -File scripts\send-claude-task.ps1 -TaskPath 
 
 Writes a long task to `CODEX_TO_CLAUDE_LATEST.md`, then sends only one short command to Claude Code. Use `-UseUiA` when direct TTY writes do not produce ack/report artifacts.
 
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\sync-wsl-from-windows-bundle.ps1 -ProjectId cailiao
+```
+
+Synchronizes the isolated WSL repo from the verified Windows release repo without relying on WSL network or `/mnt/e`. It creates a git bundle in the Windows repo, transfers it to WSL through a binary stdin stream, verifies the bundle inside the WSL repo, stashes any dirty WSL work by default, then resets the isolated repo to the bundle head. Do not use PowerShell text pipelines, `cmd type`, or base64 through normal pipeline text for git bundles; those paths can corrupt binary bundle bytes.
+
 ## Success criteria
 
 Do not treat command exit code as delivery success. Success requires an artifact:
