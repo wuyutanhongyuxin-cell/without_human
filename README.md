@@ -134,6 +134,12 @@ powershell -ExecutionPolicy Bypass -File scripts\send-claude-task.ps1 -TaskPath 
 
 低风险任务可由 DeepSeek 作为 Codex 侧 helper 处理，凭据只从仓库外环境变量读取，不进入 Git。说明见 `docs/DEEPSEEK_DELEGATION.md`。
 
+首次配置 DeepSeek key：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\set-deepseek-key.ps1
+```
+
 ## Git策略
 
 每个阶段使用独立分支：

@@ -7,9 +7,13 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+if (-not $Model) { $Model = [Environment]::GetEnvironmentVariable("DEEPSEEK_MODEL", "User") }
+if (-not $BaseUrl) { $BaseUrl = [Environment]::GetEnvironmentVariable("DEEPSEEK_BASE_URL", "User") }
+$ApiKey = $env:DEEPSEEK_API_KEY
+if (-not $ApiKey) { $ApiKey = [Environment]::GetEnvironmentVariable("DEEPSEEK_API_KEY", "User") }
 if (-not $Model) { $Model = "deepseek-v4-flash" }
 if (-not $BaseUrl) { $BaseUrl = "https://api.deepseek.com" }
-if (-not $env:DEEPSEEK_API_KEY) {
+if (-not $ApiKey) {
   throw "DEEPSEEK_API_KEY is not set. Store it outside the repo, e.g. as a user environment variable or in your launcher environment."
 }
 if (-not (Test-Path $PromptPath)) {
@@ -36,7 +40,7 @@ $Body = @{
 } | ConvertTo-Json -Depth 8
 
 $Headers = @{
-  "Authorization" = "Bearer $($env:DEEPSEEK_API_KEY)"
+  "Authorization" = "Bearer $ApiKey"
   "Content-Type" = "application/json"
 }
 

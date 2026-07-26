@@ -46,7 +46,13 @@ $env:DEEPSEEK_MODEL = "deepseek-v4-flash"
 $env:DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 ```
 
-The script `scripts/invoke-deepseek-task.ps1` reads those variables and calls the OpenAI-compatible `/chat/completions` endpoint. It does not write the key to disk.
+Use `scripts/set-deepseek-key.ps1` to enter the key in a separate masked PowerShell prompt:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\set-deepseek-key.ps1
+```
+
+The script stores `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, and `DEEPSEEK_BASE_URL` as Windows User environment variables, outside the repository. `scripts/invoke-deepseek-task.ps1` reads process env first, then User env, and calls the OpenAI-compatible `/chat/completions` endpoint. It does not print the key.
 
 ## Usage
 
