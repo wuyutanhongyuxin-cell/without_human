@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`cdbf8be0b93475e5575c46ca92dd7fd280e5ff79`（Surface claim insufficiency in audit UI）
+- 目标项目最新 main：`6689a537bcda1426849cd0b9d055d2e5417d42bf`（Add writing workflow state machine）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可通过 WSL TTY 优先派发短命令，并在 TTY 不消费输入时用 UIA/窗口截图确认 Claude Code 状态
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1、向量检索/embedding 管线骨架 v1、可插拔重排管线骨架 v1、证据不足/拒绝理由 v1、前端不足审计面板 v1
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1、向量检索/embedding 管线骨架 v1、可插拔重排管线骨架 v1、证据不足/拒绝理由 v1、前端不足审计面板 v1、阶段3写作状态机 v1
 
 ## 最近完成
 
@@ -84,6 +84,8 @@
 - 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（155 tests OK）、`python -m unittest tests.test_claim_insufficiency -v`（8 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`python -m json.tool CODEX_HANDOFF.json`、`git diff --check`、凭据形态扫描。提交并推送 `cailiao` main：`d73345d5d98068c5e4c8cefab5cf99d017f4f79a`；GitHub Actions `quality-gates` run `30195181509` success。
 - 2026-07-26：Codex 派发 `cailiao-stage2b-frontend-insufficiency-panel-v1` 给 Claude Code；Claude 在前端资料库“检索与核验”渲染中加入 `renderInsufficiency`，显示 `summary`、`blocking`、`missing_markers`、`conflict_count`、词面 `overlap`、`details` 与 `method`，并保持旧响应无 `insufficiency` 时 no-op。
 - 2026-07-26：Codex 独立审核确认前端文案只称“确定性词面审计/非语义/NLI/真伪判断”，动态值使用既有 `escapeHtml`；执行门禁：`python -m unittest tests.test_frontend_ui -v`（13 tests OK）、`python -m unittest discover -s tests -v`（158 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`python -m json.tool CODEX_HANDOFF.json`、`git diff --check`、凭据形态扫描。提交并推送 `cailiao` main：`cdbf8be0b93475e5575c46ca92dd7fd280e5ff79`；GitHub Actions `quality-gates` run `30195664586` success。
+- 2026-07-26：Codex 派发 `cailiao-stage3-writing-state-machine-v1` 给 Claude Code；Claude 新增 `build_writing_state(payload, analysis)`，把五态 `materials_insufficient/资料不足`、`ready_to_draft/可起草`、`needs_revision/待修`、`ready_for_review/待审`、`ready_to_export/可导出` 作为确定性附加层并入 `analyze_payload` 与 `/api/generate` 响应；`review_approved`/`approved` 不能覆盖 blocker/fail。
+- 2026-07-26：Codex 修正交付质量细节：`CODEX_HANDOFF.json` 标为 `verified_by_codex`，`tools/run_quality_gates.py` 的 py-compile 门禁纳入 `tests/test_writing_state.py`；执行门禁：`python -m unittest tests.test_writing_state -v`（10 tests OK）、`python -m unittest discover -s tests -v`（168 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`python -m json.tool CODEX_HANDOFF.json`、`git diff --check`、凭据形态扫描。提交并推送 `cailiao` main：`6689a537bcda1426849cd0b9d055d2e5417d42bf`；GitHub Actions `quality-gates` run `30196250953` success。
 
 ## 待完成
 
@@ -103,6 +105,7 @@
 - [x] 评测集结构校验工具 v1：校验 id 唯一、query 非空、过滤键、相关性目标、min_authority/format，并以错误/告警区分结构违规与占位/数量不足风险
 - [x] 确定性冲突证据候选 v1：同上下文不同数量、明确否定候选，命中降级为待核实
 - [ ] 引用语义蕴含、完整语义级冲突证据检测与模型/规则结合的拒答深化
+- [x] 阶段3写作状态机 v1：`writing_state` 五态、`can_generate`/`can_export`、blocker/fail/warning 分组与确定性 `required_actions`
 - [ ] 将 WSL TTY 派发、报告轮询、diff 提取、门禁与返工循环固化为脚本，减少 GUI/窗口定位依赖
 - [ ] 修正 Claude 启动脚本 UTF-8 BOM 问题
 
