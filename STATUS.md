@@ -61,11 +61,12 @@
 - 2026-07-25：Codex 发现并修复两处交付质量问题：CLI 无效套件测试写入 `tests/data` 导致受限目录失败，改为 `tempfile.TemporaryDirectory`；`CODEX_HANDOFF.json` 出现 mojibake，改为 ASCII 可审计 JSON 并写入真实验证结果。
 - 2026-07-25：Codex 独立执行门禁：`python -m py_compile ... tools/validate_retrieval_suite.py tests/test_suite_validator.py`、`python -m unittest discover -s tests -v`（118 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
 - 2026-07-25：Codex 提交并推送 `cailiao` main：`320b5d4b1750dfb3255044bb5fff2c37f964e164`；GitHub Actions `quality-gates` run `30166642045` 已完成并通过。
-- 2026-07-26：上一轮派发 `cailiao-stage2b-conflict-evidence-v1` 后，当前 Codex 会话无法访问 `KiroUbuntu`，本地只保留 Claude Code 截图，未发现 Claude 交付 diff/report；Codex 按无人化接管规则从 `cailiao` main `320b5d4b1750dfb3255044bb5fff2c37f964e164` 直接实现确定性冲突证据候选 v1。
+- 2026-07-26：上一轮派发 `cailiao-stage2b-conflict-evidence-v1` 后，Codex 普通沙箱视角一度看不到 `KiroUbuntu`，但提权宿主视角确认 `KiroUbuntu` 仍在运行、Claude 进程仍绑定 `/dev/pts/0`；隔离仓库保留 Claude 的旧 diff/report。Codex 已从 `cailiao` main `320b5d4b1750dfb3255044bb5fff2c37f964e164` 独立实现、验证并发布确定性冲突证据候选 v1，未采用该旧 diff。
 - 2026-07-26：`cailiao` 新增 `detect_conflict_evidence` 与 `verify_claim.conflict_evidence`，对同上下文不同数量标记、必备标记附近明确否定进行保守提示；命中时把原本 `supported` 的结论降级为 `needs_verification`，不声称语义蕴含或真实矛盾证明。
 - 2026-07-26：Codex 修正统一门禁 `py-compile`，使用临时 `PYTHONPYCACHEPREFIX`，避免受旧 `__pycache__` 目录 ownership 影响。
 - 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（121 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`、凭据形态扫描。
 - 2026-07-26：Codex 提交并推送 `cailiao` main：`1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757`。
+- 2026-07-26：Codex 向 Claude `/dev/pts/0` 写入短状态，告知 conflict-evidence-v1 已由 Codex 发布，隔离工作区旧 diff 不要继续应用，等待下一轮明确任务。
 
 ## 待完成
 
@@ -90,4 +91,4 @@
 - Claude 的 Key 不落盘，因此进程或 WSL 重启后需要用户重新隐藏输入一次。
 - Claude 不应自行执行 Git push；所有真实测试、提交和发布由 Codex 完成。
 - 交互窗口派发必须先验证窗口标题与前台句柄；不要向目录名为 `material-writing-system` 的 Codex 标签发送任务。
-- 当前会话未恢复到 `KiroUbuntu` / Claude Code 通道；`wsl.exe -l -v` 显示无可用发行版，`wsl.exe -d KiroUbuntu` 返回 `WSL_E_DISTRO_NOT_FOUND`。恢复 Claude 协作前需先恢复/重挂该 WSL 发行版或重建隔离副本。
+- 普通沙箱用户 `sjtu-tony\codexsandboxoffline` 可能看不到按宿主用户注册的 WSL 发行版；需要读取/派发 `KiroUbuntu` 时，应使用已授权的宿主/提权命令上下文。提权视角已确认 `KiroUbuntu` running、Claude PID 9 在 `/dev/pts/0`。

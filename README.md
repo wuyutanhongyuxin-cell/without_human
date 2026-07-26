@@ -157,7 +157,7 @@ agent/benchmark-release
 
 ## 当前状态
 
-当前状态以[STATUS.md](STATUS.md)为准；目前 `阶段2：混合检索与引用验证` 正在推进，已完成阶段 2B 的检索评测基座、匿名占位评测集、逐 case miss 诊断、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1，并已验证 Codex ↔ 隔离 Claude Code 的派工、返工、接管补齐、提取、测试、浏览器冒烟、推送和 GitHub CI 闭环；当前会话尚未重新建立 `KiroUbuntu` / Claude Code 通道。
+当前状态以[STATUS.md](STATUS.md)为准；目前 `阶段2：混合检索与引用验证` 正在推进，已完成阶段 2B 的检索评测基座、匿名占位评测集、逐 case miss 诊断、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1，并已验证 Codex ↔ 隔离 Claude Code 的派工、返工、接管补齐、提取、测试、浏览器冒烟、推送和 GitHub CI 闭环；`KiroUbuntu` / Claude Code 通道已通过提权宿主视角恢复，普通沙箱视角仍可能看不到 WSL 发行版。
 
 ## 许可证
 
