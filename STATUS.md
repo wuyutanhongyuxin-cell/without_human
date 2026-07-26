@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`d73345d5d98068c5e4c8cefab5cf99d017f4f79a`（Add claim insufficiency audit details）
+- 目标项目最新 main：`cdbf8be0b93475e5575c46ca92dd7fd280e5ff79`（Surface claim insufficiency in audit UI）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可通过 WSL TTY 优先派发短命令，并在 TTY 不消费输入时用 UIA/窗口截图确认 Claude Code 状态
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1、向量检索/embedding 管线骨架 v1、可插拔重排管线骨架 v1、证据不足/拒绝理由 v1
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1、向量检索/embedding 管线骨架 v1、可插拔重排管线骨架 v1、证据不足/拒绝理由 v1、前端不足审计面板 v1
 
 ## 最近完成
 
@@ -82,6 +82,8 @@
 - 2026-07-26：`cailiao` 新增确定性证据不足/拒绝理由 v1：`insufficiency` 每次随 `verify_claim` 返回，包含 `has_insufficiency`、`summary`、`blocking`、`missing_markers`、`conflict_count`、词面 `overlap`、机器可读 `details` 与 `method=deterministic_lexical_insufficiency_v1`；它只解释词面证据为何不足，不是语义蕴含、NLI、真伪判断或真实矛盾证明。
 - 2026-07-26：Codex 修正交付质量细节：`CODEX_HANDOFF.json` 标为 `verified_by_codex` 并写入真实验证结果，`tools/run_quality_gates.py` 的 py-compile 门禁纳入 `tests/test_claim_insufficiency.py`，`docs/ROADMAP.md` 同步阶段 2B 状态。
 - 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（155 tests OK）、`python -m unittest tests.test_claim_insufficiency -v`（8 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`python -m json.tool CODEX_HANDOFF.json`、`git diff --check`、凭据形态扫描。提交并推送 `cailiao` main：`d73345d5d98068c5e4c8cefab5cf99d017f4f79a`；GitHub Actions `quality-gates` run `30195181509` success。
+- 2026-07-26：Codex 派发 `cailiao-stage2b-frontend-insufficiency-panel-v1` 给 Claude Code；Claude 在前端资料库“检索与核验”渲染中加入 `renderInsufficiency`，显示 `summary`、`blocking`、`missing_markers`、`conflict_count`、词面 `overlap`、`details` 与 `method`，并保持旧响应无 `insufficiency` 时 no-op。
+- 2026-07-26：Codex 独立审核确认前端文案只称“确定性词面审计/非语义/NLI/真伪判断”，动态值使用既有 `escapeHtml`；执行门禁：`python -m unittest tests.test_frontend_ui -v`（13 tests OK）、`python -m unittest discover -s tests -v`（158 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`python -m json.tool CODEX_HANDOFF.json`、`git diff --check`、凭据形态扫描。提交并推送 `cailiao` main：`cdbf8be0b93475e5575c46ca92dd7fd280e5ff79`；GitHub Actions `quality-gates` run `30195664586` success。
 
 ## 待完成
 
@@ -93,6 +95,7 @@
 - [x] 向量检索与可替换 embedding 管线骨架 v1：默认关闭、确定性本地测试通道、无网络/凭据/持久化向量库
 - [x] 可插拔重排管线骨架 v1：默认关闭、确定性本地测试重排器、只重排已融合 Top K、无网络/凭据/新召回
 - [x] 证据不足/拒绝理由 v1：`verify_claim.insufficiency` 输出稳定、机器可读的词面审计原因，覆盖无证据、漏标记、冲突候选、弱词面重合与 clean supported
+- [x] 前端不足审计面板 v1：资料库“检索与核验”展示 `insufficiency` 审计块，兼容旧响应且明确非语义/NLI
 - [ ] 真实 embedding provider、持久化向量库与生产级 reranker provider
 - [x] 主张到证据精确映射 v1：逐标记归因到覆盖分段列表、漏标记、逐分段命中详情和覆盖率
 - [x] 可审计检索/核验面板 v1：前端展示 RRF 分、通道 rank/score、命中理由、BM25/向量状态、主张核验证据映射与空输入保护
