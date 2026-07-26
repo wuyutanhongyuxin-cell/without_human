@@ -43,7 +43,7 @@ public class Win32 {
   $ClaudeWindow = $null
   foreach ($Window in $Windows) {
     $Name = $Window.Current.Name
-    if ($Name -match "claude agents|Execute Codex-to-Claude|Claude Code") {
+    if ($Name -match "codex_to_claude|claude agents|Execute Codex-to-Claude|Claude Code") {
       $ClaudeWindow = $Window
       break
     }

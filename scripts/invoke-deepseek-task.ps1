@@ -7,6 +7,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 if (-not $Model) { $Model = [Environment]::GetEnvironmentVariable("DEEPSEEK_MODEL", "User") }
 if (-not $BaseUrl) { $BaseUrl = [Environment]::GetEnvironmentVariable("DEEPSEEK_BASE_URL", "User") }
 $ApiKey = $env:DEEPSEEK_API_KEY

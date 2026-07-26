@@ -69,6 +69,12 @@
 - 2026-07-26：Codex 向 Claude `/dev/pts/0` 写入短状态，告知 conflict-evidence-v1 已由 Codex 发布，隔离工作区旧 diff 不要继续应用，等待下一轮明确任务。
 - 2026-07-26：Codex 做握手验证：直接写 `/dev/pts/0` 未产生 ack；通过 UIA 聚焦 `1 awaiting input · claude agents` 窗口、粘贴短命令并回车后，Claude 写入 `/home/kiro/kiro-work/work/CLAUDE_ACK_FROM_CODEX.txt`，内容为 `ACK codex-claude-handshake-20260726`。结论：Claude Code 可交互，但本会话应优先使用“任务文件 + 已验证 Claude 窗口短命令 + ack/report 文件回执”的闭环，不只凭 TTY 写入返回码判断成功。
 - 2026-07-26：新增 CLI 桥接脚本：`scripts/check-claude-channel.ps1`、`scripts/send-claude-handshake.ps1`、`scripts/send-claude-task.ps1`；保留 Codex CLI + Claude Code CLI 双会话模式，只脚本化通道检查、任务文件写入、UIA 短命令和 ack/report 产物验证。新增 `scripts/invoke-deepseek-task.ps1` 与 `docs/DEEPSEEK_DELEGATION.md`，用于 Codex 侧低风险任务委派；DeepSeek key 只从仓库外 `DEEPSEEK_API_KEY` 环境变量读取。
+- 2026-07-26：Codex 先将 Claude 隔离仓库旧 conflict-evidence diff 以 stash 归档，再用本地补丁同步到已发布 `cailiao` main `1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757`，并在 WSL 以 `python3 -m unittest discover -s tests -v` 验证 121 tests OK 后创建本地同步基线提交 `20bc2f5 Sync`（不推送）。
+- 2026-07-26：Codex 派发 `cailiao-stage2b-vector-pipeline-skeleton-v1` 给 Claude Code；Claude 完成后端、测试、文档和交付报告，但未能在 Claude 工具环境运行测试。Codex 提取 diff 到 Windows 发布仓库并独立审核。
+- 2026-07-26：`cailiao` 新增阶段 2B 向量检索/可替换 embedding 管线骨架 v1：默认关闭的 `VectorEmbedder`、`DeterministicHashEmbedder`、`InProcessVectorIndex`、`VectorPipeline`、`resolve_vector_pipeline`，`search_library(..., vector_config=...)` 与 HTTP `?vector=` opt-in；确定性本地测试通道只做词面特征哈希，不是真实语义 embedding，不联网、不读凭据、不持久化向量库。
+- 2026-07-26：Codex 修正交付质量细节：`CODEX_HANDOFF.json` 标为 `verified_by_codex`，`docs/ROADMAP.md` 将“骨架 v1 已完成”和“真实 embedding provider/持久化向量库待完成”拆开，`tools/run_quality_gates.py` 的 py-compile 门禁纳入 `tests/test_vector_pipeline.py`。
+- 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（133 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`git diff --check`。提交并推送 `cailiao` main：`fb7e36b307e7dd8bde2906f192e5bd38b7a2e1da`；GitHub Actions `quality-gates` run `30189895434` success。
+- 2026-07-26：Claude 通道经验更新：当前 Claude Code 窗口标题可能变为 `codex_to_claude ack`，`scripts/send-claude-task.ps1` 已补充匹配 `codex_to_claude`。DeepSeek 低风险规划调用遇到 PowerShell 发送/TLS 连接关闭，`scripts/invoke-deepseek-task.ps1` 已在调用前固定 TLS 1.2；后续仍需一次成功 live call 才能把 DeepSeek 标为已验证。
 
 ## 待完成
 
@@ -77,7 +83,8 @@
 - [ ] 建立 50-100 条真实匿名检索查询集，替换 `tests/data/retrieval_eval_suite.json` 的占位合成集
 - [x] 将 `eval-retrieval` CLI 固化到 Codex/CI 门禁脚本
 - [ ] 更大真实查询集上的 BM25/FTS 扫参与阈值校准
-- [ ] 向量检索、embedding 管线与可插拔重排
+- [x] 向量检索与可替换 embedding 管线骨架 v1：默认关闭、确定性本地测试通道、无网络/凭据/持久化向量库
+- [ ] 真实 embedding provider、持久化向量库与可插拔重排
 - [x] 主张到证据精确映射 v1：逐标记归因到覆盖分段列表、漏标记、逐分段命中详情和覆盖率
 - [x] 可审计检索/核验面板 v1：前端展示 RRF 分、通道 rank/score、命中理由、BM25/向量状态、主张核验证据映射与空输入保护
 - [x] 元数据过滤 UI/评测覆盖 v1：机关、格式、日期区间、有效性范围、地区、来源类型、权威、文档/分段状态的搜索/HTTP/评测覆盖
