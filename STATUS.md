@@ -7,7 +7,7 @@
 - 当前阶段：阶段2，混合检索与引用验证（阶段 2B 进行中）
 - 状态：进行中
 - 目标项目：https://github.com/wuyutanhongyuxin-cell/cailiao
-- 目标项目最新 main：`6543b7bc6e5ea37c0b7447ceab16bc0ba0695d29`（Add reranker pipeline skeleton）
+- 目标项目最新 main：`d73345d5d98068c5e4c8cefab5cf99d017f4f79a`（Add claim insufficiency audit details）
 - 执行策略：Claude 只在隔离 WSL 工作区改代码，Codex 负责验证、Git 和 GitHub 发布
 
 ## 已确认
@@ -20,7 +20,7 @@
 - [x] Codex 可通过 WSL TTY 优先派发短命令，并在 TTY 不消费输入时用 UIA/窗口截图确认 Claude Code 状态
 - [x] 稳定派发方式：完整任务写入 `/home/kiro/kiro-work/work/CODEX_TO_CLAUDE_LATEST.md`，只向 Claude Code 输入框发送短命令读取该文件
 - [x] Codex 可从 `/home/kiro/kiro-work/work/cailiao-task` 提取 Claude 修改并在 Windows 发布仓库独立验证
-- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1、向量检索/embedding 管线骨架 v1、可插拔重排管线骨架 v1
+- [x] `cailiao` 已推进到：MVP + 阶段1完成 + 阶段2A完成 + 阶段2B 检索评测基座、匿名占位评测集、中文 BM25/FTS 调优 v1、评测可解释性、评测 CLI 门禁、BM25 参数扫描框架、统一质量门禁脚本与 GitHub Actions、主张到证据精确映射 v1、可审计检索/核验面板 v1、元数据过滤 UI/评测覆盖 v1、评测集结构校验工具 v1、确定性冲突证据候选 v1、向量检索/embedding 管线骨架 v1、可插拔重排管线骨架 v1、证据不足/拒绝理由 v1
 
 ## 最近完成
 
@@ -78,6 +78,10 @@
 - 2026-07-26：Codex 派发 `cailiao-stage2b-reranker-skeleton-v1` 给 Claude Code；Claude 完成默认关闭的 `Reranker`、`DeterministicLocalReranker`、`RerankPipeline`、`resolve_rerank_pipeline`、`search_library(..., rerank_config=...)` 与 HTTP `?rerank=`，并补充评测、文档和交付报告。该骨架只对已融合 Top K 做确定性重排，不新增召回、不联网、不读凭据。
 - 2026-07-26：Codex 修正交付质量细节：`CODEX_HANDOFF.json` 标为 `verified_by_codex` 并写入真实验证结果，`tools/run_quality_gates.py` 的 py-compile 门禁纳入 `tests/test_reranker_pipeline.py`。
 - 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（147 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`python -m json.tool CODEX_HANDOFF.json`、`git diff --check`、凭据形态扫描。提交并推送 `cailiao` main：`6543b7bc6e5ea37c0b7447ceab16bc0ba0695d29`；GitHub Actions `quality-gates` run `30194430236` success。
+- 2026-07-26：Codex 派发 `cailiao-stage2b-claim-insufficiency-v1` 给 Claude Code。首次轮询被旧 `CLAUDE_TO_CODEX.md` 污染，Codex 归档旧报告后重新派发；截图确认命令进入 `codex_to_claude ack` 的 Claude Code 窗口，Claude 完成 `build_evidence_insufficiency`、`verify_claim.insufficiency`、测试与文档，但未在 Claude 环境运行测试。
+- 2026-07-26：`cailiao` 新增确定性证据不足/拒绝理由 v1：`insufficiency` 每次随 `verify_claim` 返回，包含 `has_insufficiency`、`summary`、`blocking`、`missing_markers`、`conflict_count`、词面 `overlap`、机器可读 `details` 与 `method=deterministic_lexical_insufficiency_v1`；它只解释词面证据为何不足，不是语义蕴含、NLI、真伪判断或真实矛盾证明。
+- 2026-07-26：Codex 修正交付质量细节：`CODEX_HANDOFF.json` 标为 `verified_by_codex` 并写入真实验证结果，`tools/run_quality_gates.py` 的 py-compile 门禁纳入 `tests/test_claim_insufficiency.py`，`docs/ROADMAP.md` 同步阶段 2B 状态。
+- 2026-07-26：Codex 独立执行门禁：`python -m unittest discover -s tests -v`（155 tests OK）、`python -m unittest tests.test_claim_insufficiency -v`（8 tests OK）、`python tools/validate_retrieval_suite.py --suite tests/data/retrieval_eval_suite.json --json`（passed=true，含占位与 <50 告警）、`python tools/run_quality_gates.py --json`（passed=true，5 gates passed）、`python -m json.tool CODEX_HANDOFF.json`、`git diff --check`、凭据形态扫描。提交并推送 `cailiao` main：`d73345d5d98068c5e4c8cefab5cf99d017f4f79a`；GitHub Actions `quality-gates` run `30195181509` success。
 
 ## 待完成
 
@@ -88,13 +92,14 @@
 - [ ] 更大真实查询集上的 BM25/FTS 扫参与阈值校准
 - [x] 向量检索与可替换 embedding 管线骨架 v1：默认关闭、确定性本地测试通道、无网络/凭据/持久化向量库
 - [x] 可插拔重排管线骨架 v1：默认关闭、确定性本地测试重排器、只重排已融合 Top K、无网络/凭据/新召回
+- [x] 证据不足/拒绝理由 v1：`verify_claim.insufficiency` 输出稳定、机器可读的词面审计原因，覆盖无证据、漏标记、冲突候选、弱词面重合与 clean supported
 - [ ] 真实 embedding provider、持久化向量库与生产级 reranker provider
 - [x] 主张到证据精确映射 v1：逐标记归因到覆盖分段列表、漏标记、逐分段命中详情和覆盖率
 - [x] 可审计检索/核验面板 v1：前端展示 RRF 分、通道 rank/score、命中理由、BM25/向量状态、主张核验证据映射与空输入保护
 - [x] 元数据过滤 UI/评测覆盖 v1：机关、格式、日期区间、有效性范围、地区、来源类型、权威、文档/分段状态的搜索/HTTP/评测覆盖
 - [x] 评测集结构校验工具 v1：校验 id 唯一、query 非空、过滤键、相关性目标、min_authority/format，并以错误/告警区分结构违规与占位/数量不足风险
 - [x] 确定性冲突证据候选 v1：同上下文不同数量、明确否定候选，命中降级为待核实
-- [ ] 引用语义蕴含、完整语义级冲突证据检测与证据不足拒答深化
+- [ ] 引用语义蕴含、完整语义级冲突证据检测与模型/规则结合的拒答深化
 - [ ] 将 WSL TTY 派发、报告轮询、diff 提取、门禁与返工循环固化为脚本，减少 GUI/窗口定位依赖
 - [ ] 修正 Claude 启动脚本 UTF-8 BOM 问题
 
