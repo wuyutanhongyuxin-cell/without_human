@@ -68,6 +68,7 @@
 - 2026-07-26：Codex 提交并推送 `cailiao` main：`1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757`。
 - 2026-07-26：Codex 向 Claude `/dev/pts/0` 写入短状态，告知 conflict-evidence-v1 已由 Codex 发布，隔离工作区旧 diff 不要继续应用，等待下一轮明确任务。
 - 2026-07-26：Codex 做握手验证：直接写 `/dev/pts/0` 未产生 ack；通过 UIA 聚焦 `1 awaiting input · claude agents` 窗口、粘贴短命令并回车后，Claude 写入 `/home/kiro/kiro-work/work/CLAUDE_ACK_FROM_CODEX.txt`，内容为 `ACK codex-claude-handshake-20260726`。结论：Claude Code 可交互，但本会话应优先使用“任务文件 + 已验证 Claude 窗口短命令 + ack/report 文件回执”的闭环，不只凭 TTY 写入返回码判断成功。
+- 2026-07-26：新增 CLI 桥接脚本：`scripts/check-claude-channel.ps1`、`scripts/send-claude-handshake.ps1`、`scripts/send-claude-task.ps1`；保留 Codex CLI + Claude Code CLI 双会话模式，只脚本化通道检查、任务文件写入、UIA 短命令和 ack/report 产物验证。新增 `scripts/invoke-deepseek-task.ps1` 与 `docs/DEEPSEEK_DELEGATION.md`，用于 Codex 侧低风险任务委派；DeepSeek key 只从仓库外 `DEEPSEEK_API_KEY` 环境变量读取。
 
 ## 待完成
 

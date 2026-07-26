@@ -120,6 +120,20 @@ scripts\Start Without Human Console.cmd
 
 这个脚本会先寻找已经运行的 Without Human 控制台；找到了就直接打开浏览器，没找到就从 `8787` 开始选择空闲端口启动后端，再打开浏览器。桌面快捷方式可以直接指向这个 `.cmd` 文件。
 
+## CLI 桥接脚本
+
+本仓库保留“两 CLI session”模式：Codex CLI 负责编排/审查/推送，Claude Code CLI 负责隔离实现。脚本只固定易错的桥接动作：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\check-claude-channel.ps1
+powershell -ExecutionPolicy Bypass -File scripts\send-claude-handshake.ps1 -UseUiA
+powershell -ExecutionPolicy Bypass -File scripts\send-claude-task.ps1 -TaskPath .\task.md -UseUiA
+```
+
+说明见 `docs/CLAUDE_CHANNEL_SCRIPTS.md`。
+
+低风险任务可由 DeepSeek 作为 Codex 侧 helper 处理，凭据只从仓库外环境变量读取，不进入 Git。说明见 `docs/DEEPSEEK_DELEGATION.md`。
+
 ## Git策略
 
 每个阶段使用独立分支：
