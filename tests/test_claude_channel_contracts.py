@@ -22,6 +22,13 @@ class ClaudeChannelContractsTest(unittest.TestCase):
         self.assertIn("matching_report", script)
         self.assertIn("matching_ack", script)
         self.assertIn("wsl_diff", script)
+        self.assertIn("ShowWindow", script)
+        self.assertIn("GetForegroundWindow", script)
+        self.assertIn("Claude paste verification failed", script)
+        self.assertIn("$SentVerified", script)
+        self.assertIn("ConvertTo-Base64Utf8", script)
+        self.assertIn("Invoke-WslBash", script)
+        self.assertIn('replace "`r`n", "`n"', script)
 
     def test_cli_probe_documents_non_interactive_path(self):
         script = self.read("scripts/check-claude-cli.ps1")

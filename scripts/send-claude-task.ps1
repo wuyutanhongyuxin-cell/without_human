@@ -14,6 +14,19 @@ $Project = $Config.projects | Where-Object { $_.id -eq $ProjectId } | Select-Obj
 if (-not $Project) {
   throw "Project not found: $ProjectId"
 }
+
+function ConvertTo-Base64Utf8 {
+  param([string]$Text)
+  $Text = $Text -replace "`r`n", "`n"
+  [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($Text))
+}
+
+function Invoke-WslBash {
+  param([string]$Command)
+  $Encoded = ConvertTo-Base64Utf8 $Command
+  & wsl.exe -d $Project.wsl_distro -- bash -lc "printf '%s' '$Encoded' | base64 -d | bash"
+}
+
 if (-not (Test-Path $TaskPath)) {
   throw "Task file not found: $TaskPath"
 }
@@ -26,17 +39,19 @@ if ($TaskText -match '(?m)^\s*#?\s*Task ID:\s*([A-Za-z0-9_.:-]+)\s*$') {
   $TaskId = [System.IO.Path]::GetFileNameWithoutExtension($TaskPath)
 }
 $AckFile = "$($Project.wsl_workdir)/CLAUDE_ACK_FROM_CODEX.txt"
-$ReportMtimeBeforeLines = & wsl.exe -d $Project.wsl_distro -- bash -lc "stat -c %Y '$($Project.report_file)' 2>/dev/null || echo 0"
+$ReportMtimeBeforeLines = Invoke-WslBash "stat -c %Y '$($Project.report_file)' 2>/dev/null || echo 0"
 $ReportMtimeBefore = ($ReportMtimeBeforeLines | Where-Object { $_ -match '^\d+$' } | Select-Object -Last 1)
 if (-not $ReportMtimeBefore) {
   $ReportMtimeBefore = "0"
 }
-$TaskText | & wsl.exe -d $Project.wsl_distro -- bash -lc "cat > '$($Project.task_file)'"
+$TaskEncoded = ConvertTo-Base64Utf8 $TaskText
+Invoke-WslBash "printf '%s' '$TaskEncoded' | base64 -d > '$($Project.task_file)'"
 if ($LASTEXITCODE -ne 0) {
   throw "Failed to write WSL task file: $($Project.task_file)"
 }
 
 $ShortCommand = "Task ID: $TaskId. Read $($Project.task_file) now and execute it exactly. Write report to $($Project.report_file) with this Task ID."
+$SentVerified = $false
 
 if ($UseUiA) {
   Add-Type -AssemblyName UIAutomationClient
@@ -45,7 +60,11 @@ if ($UseUiA) {
 using System;
 using System.Runtime.InteropServices;
 public class Win32 {
+  [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
   [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+  public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
 }
 "@
   $RootElement = [System.Windows.Automation.AutomationElement]::RootElement
@@ -68,20 +87,56 @@ public class Win32 {
   if (-not $ClaudeWindow) {
     throw "Claude window not found. Use scripts/check-claude-channel.ps1 and verify the Claude CLI session is open."
   }
-  [Win32]::SetForegroundWindow([intptr]$ClaudeWindow.Current.NativeWindowHandle) | Out-Null
-  Start-Sleep -Milliseconds 500
+  $ClaudeHandle = [intptr]$ClaudeWindow.Current.NativeWindowHandle
+  [Win32]::ShowWindow($ClaudeHandle, 9) | Out-Null
+  Start-Sleep -Milliseconds 300
+  [Win32]::SetForegroundWindow($ClaudeHandle) | Out-Null
+  Start-Sleep -Milliseconds 800
+  $ForegroundHandle = [Win32]::GetForegroundWindow()
+  if ($ForegroundHandle -ne $ClaudeHandle) {
+    throw "Claude window focus verification failed. foreground=$ForegroundHandle target=$ClaudeHandle"
+  }
+  $Rect = New-Object Win32+RECT
+  [Win32]::GetWindowRect($ClaudeHandle, [ref]$Rect) | Out-Null
+  $Width = $Rect.Right - $Rect.Left
+  $Height = $Rect.Bottom - $Rect.Top
+  if ($Width -lt 500 -or $Height -lt 300) {
+    throw "Claude window rectangle too small or hidden: $($Rect.Left),$($Rect.Top),$($Rect.Right),$($Rect.Bottom)"
+  }
   [System.Windows.Forms.Clipboard]::SetText($ShortCommand)
   [System.Windows.Forms.SendKeys]::SendWait("^v")
-  Start-Sleep -Milliseconds 150
+  Start-Sleep -Milliseconds 500
+  $PasteFound = $false
+  $TextCondition = New-Object System.Windows.Automation.PropertyCondition(
+    [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+    [System.Windows.Automation.ControlType]::Text)
+  $TextElements = $ClaudeWindow.FindAll([System.Windows.Automation.TreeScope]::Descendants, $TextCondition)
+  foreach ($TextElement in $TextElements) {
+    try {
+      $TextPattern = $TextElement.GetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern)
+      $WindowText = $TextPattern.DocumentRange.GetText(12000)
+      if ($WindowText -match [regex]::Escape($TaskId)) {
+        $PasteFound = $true
+        break
+      }
+    } catch {}
+  }
+  if (-not $PasteFound) {
+    throw "Claude paste verification failed for Task ID: $TaskId"
+  }
   [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+  $SentVerified = $true
 } else {
   $ProbeCommand = 'comm=$(cat /proc/9/comm 2>/dev/null || true); if [ x$comm = xclaude ]; then readlink /proc/9/fd/0; fi'
-  $Probe = & wsl.exe -d $Project.wsl_distro -- bash -lc $ProbeCommand
+  $Probe = Invoke-WslBash $ProbeCommand
   $Tty = ($Probe | Select-Object -First 1)
   if (-not $Tty) {
     throw "Claude TTY not found. Retry with -UseUiA after opening the Claude CLI session."
   }
-  & wsl.exe -d $Project.wsl_distro -- bash -lc "printf '%s\r' '$ShortCommand' > '$Tty'"
+  $ShortCommandEncoded = ConvertTo-Base64Utf8 $ShortCommand
+  Invoke-WslBash "printf '%s' '$ShortCommandEncoded' | base64 -d > '$Tty'"
+  Invoke-WslBash "printf '\r' > '$Tty'"
+  $SentVerified = $true
 }
 
 $Deadline = (Get-Date).AddSeconds($WaitSeconds)
@@ -97,9 +152,9 @@ if [ "$mtime" -gt '__BEFORE__' ] && grep -q '__TASKID__' '__REPORT__' 2>/dev/nul
 fi
 '@
   $ReportCmd = $ReportCmd.Replace("__REPORT__", $Project.report_file).Replace("__BEFORE__", $ReportMtimeBefore).Replace("__TASKID__", $TaskId)
-  $Report = & wsl.exe -d $Project.wsl_distro -- bash -lc $ReportCmd
-  $Ack = & wsl.exe -d $Project.wsl_distro -- bash -lc "if [ -f '$AckFile' ] && grep -q '$TaskId' '$AckFile' 2>/dev/null; then cat '$AckFile'; fi"
-  $Diff = & wsl.exe -d $Project.wsl_distro -- bash -lc "cd '$($Project.wsl_repo)' && git status --short"
+  $Report = Invoke-WslBash $ReportCmd
+  $Ack = Invoke-WslBash "if [ -f '$AckFile' ] && grep -q '$TaskId' '$AckFile' 2>/dev/null; then cat '$AckFile'; fi"
+  $Diff = Invoke-WslBash "cd '$($Project.wsl_repo)' && git status --short"
   $LastReport = (($Report + $Ack + $Diff) -join "`n")
   if ($Report) { $ObservedKind = "matching_report"; break }
   if ($Ack) { $ObservedKind = "matching_ack"; break }
@@ -112,7 +167,7 @@ fi
 [ordered]@{
   project = $Project.id
   task_id = $TaskId
-  sent = $true
+  sent = $SentVerified
   used_uia = [bool]$UseUiA
   waited_seconds = $WaitSeconds
   poll_seconds = $PollSeconds
