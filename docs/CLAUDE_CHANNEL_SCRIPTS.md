@@ -18,6 +18,13 @@ powershell -ExecutionPolicy Bypass -File scripts\check-claude-channel.ps1
 Checks the configured project, WSL distro, Claude PID, Claude TTY, writable status, ack path, and isolated repo status. In the current setup it expects Claude PID `9` and TTY `/dev/pts/0`.
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts\check-claude-cli.ps1
+powershell -ExecutionPolicy Bypass -File scripts\check-claude-cli.ps1 -LiveProbe
+```
+
+Checks whether the local `claude` command exposes non-interactive `--print` and background-agent flags. `-LiveProbe` sends a minimal non-mutating prompt and reports whether auth is usable. If the live probe returns an OAuth/authentication failure, background CLI dispatch is not stable yet; keep using the TTY/UIA bridge until the Claude account is reauthenticated.
+
+```powershell
 powershell -ExecutionPolicy Bypass -File scripts\send-claude-handshake.ps1 -UseUiA
 ```
 
