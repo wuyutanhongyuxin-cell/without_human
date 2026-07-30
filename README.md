@@ -132,6 +132,21 @@ powershell -ExecutionPolicy Bypass -File scripts\send-claude-task.ps1 -TaskPath 
 
 说明见 `docs/CLAUDE_CHANNEL_SCRIPTS.md`。
 
+一键阶段循环入口默认使用 CLI session-to-session 的 TTY 通道；只有显式加 `-UseUiA` 才占用 Claude Code 窗口做 GUI 粘贴兜底：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run-cailiao-cycle.ps1 -TaskPath .\tmp\next-task.md -CommitMessage "Implement next cailiao slice" -Push -WatchCi -SyncWsl
+```
+
+辅助状态与硬保护：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\get-cailiao-status.ps1
+powershell -ExecutionPolicy Bypass -File scripts\check-cailiao-roadmap-guard.ps1
+```
+
+`check-cailiao-roadmap-guard.ps1` 会阻止 Stage 2B 五个真实外部证据父项在没有真实证据时被误勾选；`run-cailiao-cycle.ps1` 每轮都会先派发 Claude、等待匹配 ack/report/diff，再跑 ROADMAP guard、完整质量门禁、diff 检查、可选提交推送、可选 GitHub Actions watch 和可选 WSL 同步，并把日志写入 `tmp/cycles/`。
+
 低风险任务可由 DeepSeek 作为 Codex 侧 helper 处理，凭据只从仓库外环境变量读取，不进入 Git。说明见 `docs/DEEPSEEK_DELEGATION.md`。
 
 首次配置 DeepSeek key：
