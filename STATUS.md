@@ -134,4 +134,6 @@
 - 2026-07-31: Fixed `scripts/sync-wsl-from-windows-bundle.ps1` to strip a UTF-8 BOM only when present. Previous unconditional `tail -c +4` corrupted no-BOM git bundles.
 - 2026-07-31: Codex dispatched `cailiao-final-002-task-evidence-search-attach` after WSL sync to `7f595f6`. UIA could not find Claude window; TTY dispatch returned sent=true but no matching ack/report/diff within 120s. Codex took over.
 - 2026-07-31: Codex implemented and pushed `cailiao` main `3205509876dad8cb19104a498a68b0a683848e1d` (`Add task evidence API`). Gates: focused task-evidence tests 7 OK; full unittest 765 OK; `tools/run_quality_gates.py --json` passed 5/5; JSON and `git diff --check` clean.
-- Next loop task: `cailiao-final-003-task-generate-audit-export-flow` should add task-scoped generate/audit/export metadata endpoints without adding providers, dependencies, or frontend rewrites.
+- 2026-07-31: Codex dispatched `cailiao-final-003-task-generate-audit-export-flow` after WSL sync to `3205509`. TTY dispatch returned sent=true but no matching ack/report/diff within 120s. Codex took over.
+- 2026-07-31: Codex implemented and pushed `cailiao` main `10073b030c1601640d66ef6e8c8d22fa70e59043` (`Add task workflow API`). Gates: focused task-flow tests 7 OK; full unittest 772 OK; `tools/run_quality_gates.py --json` passed 5/5; JSON and `git diff --check` clean.
+- Next loop task: `cailiao-final-004-minimal-task-ui` should add a minimal frontend task workspace using existing backend APIs without app rewrite.
