@@ -120,9 +120,17 @@ scripts\Start Without Human Console.cmd
 
 这个脚本会先寻找已经运行的 Without Human 控制台；找到了就直接打开浏览器，没找到就从 `8787` 开始选择空闲端口启动后端，再打开浏览器。桌面快捷方式可以直接指向这个 `.cmd` 文件。
 
+## Claude 交互协议
+
+当前用户指定“前端严格循环”时，Claude 的派发、观察和返工只能通过可见 Claude Code 前端窗口完成。Codex 找不到可见 Claude 窗口时必须停在 `awaiting_visible_claude_window`，不得改用隐藏 TTY、WSL、API 或脚本继续派发/返工，也不得创建下一阶段任务。
+
+Claude 明确交付后，Codex 才进入审核/发布阶段：读取 `CLAUDE_TO_CODEX.md`、检查 diff、运行测试和门禁、提交推送 `cailiao`、确认 Actions/门禁、更新本仓库进度。审核不通过时，缺陷必须通过可见 Claude Code 前端窗口退回 Claude，Codex 不直接接管实现。
+
+只有当前阶段完成、推送、Actions/门禁确认并更新 `without_human` 进度后，才能派发下一阶段。
+
 ## CLI 桥接脚本
 
-本仓库保留“两 CLI session”模式：Codex CLI 负责编排/审查/推送，Claude Code CLI 负责隔离实现。脚本只固定易错的桥接动作：
+本仓库仍保留“两 CLI session”模式脚本，但它们只适用于未启用前端严格循环的场景。前端严格循环启用时，不得用这些脚本派发 Claude 或发送返工，只能用于非 Claude 控制面的状态检查或历史维护。
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\check-claude-channel.ps1

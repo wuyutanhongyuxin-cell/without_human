@@ -51,6 +51,30 @@ class ClaudeChannelContractsTest(unittest.TestCase):
         self.assertIn("OAuth", docs)
         self.assertIn("UseUiA", docs)
 
+    def test_docs_enforce_frontend_only_strict_mode(self):
+        docs = self.read("docs/CLAUDE_CHANNEL_SCRIPTS.md")
+
+        self.assertIn("Frontend-only strict mode", docs)
+        self.assertIn("visible Claude Code frontend/window", docs)
+        self.assertIn("must not paste into hidden Claude sessions", docs)
+        self.assertIn("write to Claude TTY", docs)
+        self.assertIn("Codex does not take over implementation", docs)
+        self.assertIn("awaiting_visible_claude_window", docs)
+        self.assertIn("Do not use hidden dispatch", docs)
+        self.assertIn("must return the exact defect to Claude through the visible frontend window", docs)
+        self.assertIn("The next stage may be dispatched only after", docs)
+
+    def test_readme_frontend_loop_matches_strict_mode(self):
+        readme = self.read("README.md")
+
+        self.assertIn("前端严格循环", readme)
+        self.assertIn("可见 Claude Code 前端窗口", readme)
+        self.assertIn("awaiting_visible_claude_window", readme)
+        self.assertIn("不得改用隐藏 TTY、WSL、API 或脚本继续派发/返工", readme)
+        self.assertIn("审核不通过", readme)
+        self.assertIn("Codex 不直接接管实现", readme)
+        self.assertIn("只有当前阶段完成、推送、Actions/门禁确认", readme)
+
 
 if __name__ == "__main__":
     unittest.main()
