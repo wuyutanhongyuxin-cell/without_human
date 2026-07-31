@@ -69,9 +69,9 @@ function Send-BinaryToWsl {
 
 $RemoteBundle = "/tmp/$ProjectId-$ShortHead.bundle"
 Send-BinaryToWsl -SourcePath $BundlePath -DestPath $RemoteBundle
-# PowerShell StandardInput writes a UTF-8 BOM before BaseStream bytes in this
-# host path; git bundles must start with "# v", so strip that transport prefix.
-Invoke-WslBash "tail -c +4 '$RemoteBundle' > '$RemoteBundle.nobom' && mv '$RemoteBundle.nobom' '$RemoteBundle'"
+# Some PowerShell hosts prepend a UTF-8 BOM before BaseStream bytes, while newer
+# hosts do not. Git bundles must start with "# v"; strip only an actual BOM.
+Invoke-WslBash "if [ `"`$(head -c 3 '$RemoteBundle' | od -An -tx1 | tr -d ' \n')`" = 'efbbbf' ]; then tail -c +4 '$RemoteBundle' > '$RemoteBundle.nobom' && mv '$RemoteBundle.nobom' '$RemoteBundle'; fi"
 
 Invoke-WslBash "cd '$WslRepo' && git bundle verify '$RemoteBundle'"
 

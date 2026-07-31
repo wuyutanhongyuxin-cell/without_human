@@ -50,9 +50,9 @@
                        "id":  "benchmark-release"
                    }
                ],
-    "target_main_commit":  "1e4a77edccbc9ff3fbd46fe01dc1aa4dfab1a757",
+    "target_main_commit":  "3205509876dad8cb19104a498a68b0a683848e1d",
     "target_repository":  "https://github.com/wuyutanhongyuxin-cell/cailiao",
     "schema_version":  "1.0",
-    "current_stage":  "hybrid-retrieval",
-    "updated_at":  "2026-07-26"
+    "current_stage":  "final-closeout",
+    "updated_at":  "2026-07-31"
 }
