@@ -75,6 +75,7 @@ without_human/
 ├─ docs/
 │  ├─ IMPLEMENTATION_PLAN.md         # 完整阶段规划
 │  ├─ SECURITY_BOUNDARY.md           # 权限和凭据边界
+│  ├─ WSL_CLAUDE_NETWORKING.md       # Claude/WSL联网与代理恢复
 │  ├─ QUALITY_GATES.md               # 合并与发布门禁
 │  ├─ OPERATOR_CONSOLE_PLAN.md       # 本机傻瓜式控制台规划
 │  └─ AUTONOMY_LESSONS.md            # 无人化编排经验和反模式
@@ -151,9 +152,12 @@ powershell -ExecutionPolicy Bypass -File scripts\run-cailiao-cycle.ps1 -TaskPath
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\get-cailiao-status.ps1
 powershell -ExecutionPolicy Bypass -File scripts\check-cailiao-roadmap-guard.ps1
+powershell -ExecutionPolicy Bypass -File scripts\check-wsl-claude-network.ps1
 ```
 
 `check-cailiao-roadmap-guard.ps1` 会阻止 Stage 2B 五个真实外部证据父项在没有真实证据时被误勾选；`run-cailiao-cycle.ps1` 每轮都会先派发 Claude、等待匹配 ack/report/diff，再跑 ROADMAP guard、完整质量门禁、diff 检查、可选提交推送、可选 GitHub Actions watch 和可选 WSL 同步，并把日志写入 `tmp/cycles/`。
+
+Claude Code 运行在 WSL 隔离环境时，若 Web Search 或 HTTPS 访问异常，先按 `docs/WSL_CLAUDE_NETWORKING.md` 检查。已验证的恢复路径是 Windows 用户目录 `.wslconfig` 使用 `networkingMode=mirrored`、`autoProxy=true`、`dnsTunneling=true`、`firewall=true`，然后 `wsl --shutdown` 并从正常启动器重新打开 Claude Code。不要把本机代理直接开放到整个局域网作为默认方案。
 
 低风险任务可由 DeepSeek 作为 Codex 侧 helper 处理，凭据只从仓库外环境变量读取，不进入 Git。说明见 `docs/DEEPSEEK_DELEGATION.md`。
 

@@ -30,3 +30,11 @@
 ## 无人化限制
 
 API Key不落盘是高优先级安全要求。Claude进程或WSL重启后，必须由用户重新输入一次Key。禁止通过读取其他进程环境、终端记录或调试日志绕过该要求。
+
+## WSL 网络代理边界
+
+- 允许在用户明确要求时，通过官方 WSL 配置启用 `networkingMode=mirrored`、`autoProxy=true`、`dnsTunneling=true` 和 `firewall=true`，让隔离 WSL 继承 Windows 系统代理。
+- 优先使用 WSL mirrored networking，不优先开启 v2rayN 的“允许来自局域网连接”。
+- 如必须桥接 Windows 代理端口，只能绑定 WSL 虚拟网卡地址并限制 WSL 子网；不得为了省事把代理监听开放到 `0.0.0.0` 或整个局域网。
+- 诊断代理时只能输出是否设置、长度、监听地址和连通性结果；不得输出 token、API key、代理认证信息或浏览器会话信息。
+- 如果 WSL HTTPS 正常但 Claude Web Search 返回 `502 upstream`，应记录为上游搜索/网关故障候选，不得继续扩大本机权限来“硬钻”。

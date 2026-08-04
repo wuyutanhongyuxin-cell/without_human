@@ -80,3 +80,15 @@ Do not treat command exit code or visible Claude prose as delivery success by it
 ## Known edge
 
 The normal Codex sandbox user may not see the host user's WSL registration. Use an approved host/elevated command context for review-mode checks when needed. In frontend-only strict mode, do not use that context to dispatch to Claude or send rework.
+
+## WSL networking and Claude Web Search
+
+Claude Code Web Search failures must be diagnosed before treating them as task failures. The tested recovery path is documented in `docs/WSL_CLAUDE_NETWORKING.md`.
+
+Use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\check-wsl-claude-network.ps1
+```
+
+This script is observation-only: it checks Windows proxy hints, `.wslconfig`, WSL proxy environment variables, and HTTPS reachability. It must not print secrets and must not decide that an upstream `502` is a local machine fault when WSL HTTPS probes are otherwise healthy.
